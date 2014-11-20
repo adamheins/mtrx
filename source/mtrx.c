@@ -4,7 +4,7 @@
 #include "matrix.h"
 
 
-
+#define NULL (void *)0;
 
 typedef struct {
 	int *values;
@@ -12,24 +12,23 @@ typedef struct {
 } array_t;
 
 
+/* Stores the results of an LU decomposition. */
+typedef struct {
+	matrix_t *L;
+	matrix_t *U;
+	matrix_t *P;
+	unsigned int swaps;
+} lu_factors_t;
 
 
-/*
- * Initialize the matrix.
- */
-void matrix_init(matrix_t *matrix, unsigned int rows, unsigned int columns) {
-
-	// Allocate the array of rows.
-	matrix->values = (double **)calloc(rows, sizeof(double *));
-
-	// Allocate the columns arrays.
-	unsigned int i;
-	for (i = 0; i < rows; ++i)
-		matrix->values[i] = (double *)calloc(columns, sizeof(double));
-
-	matrix->rows = rows;
-	matrix->columns = columns;
+/* Frees the memory associated with an lu_factors_t object. */
+void lu_factors_destroy(lu_factors_t *lu_factors) {
+	mtrx_destroy(lu_factors->L);
+	mtrx_destroy(lu_factors->U);
+	mtrx_destroy(lu_factors->P);
+	free(lu_factors);
 }
+
 
 
 vector_t *vctr_empty(unsigned int length) {
@@ -72,6 +71,21 @@ vector_t *vctr_ones(unsigned int length) {
 void vctr_destroy(vector_t *vector) {
 	free(vector->values);
 	free(vector);
+}
+
+
+vector_t *vctr_copy(vector_t *vector) {
+	vector_t *copy = vctr_empty(vector->length);
+	for (unsigned int i = 0; i < vector->length; ++i)
+		copy->values[i] = vector->values[i];
+	return copy;
+}
+
+
+/* Prints out the vector to standard output. */
+void vctr_print(vector_t *vector) {
+	for (unsigned int i = 0; i < vector->length; ++i)
+		printf("%f\n", vector->values[i]);
 }
 
 
@@ -145,16 +159,34 @@ matrix_t *mtrx_diag(vector_t *vector) {
 }
 
 
+/* Free the memory associated with the matrix object. */
 void mtrx_destroy(matrix_t *matrix) {
 	unsigned int i;
 	for (i = 0; i < matrix->rows; ++i)
 		free(matrix->values[i]);
 	free(matrix->values);
 	free(matrix);
+	matrix = NULL;
 }
 
 
-void matrix_print(matrix_t *matrix) {
+/* Copies an existing matrix into a new one. */
+matrix_t *mtrx_copy(matrix_t *matrix) {
+
+	matrix_t *copy = (matrix_t *)malloc(sizeof(matrix_t));
+	matrix_init(copy, matrix->rows, matrix->columns);
+
+	for (unsigned int i = 0; i < matrix->rows; ++i) {
+		for (unsigned int j = 0; j < matrix->columns; ++j)
+			copy->values[i][j] = matrix->values[i][j];
+	}
+
+	return copy;
+}
+
+
+/* Print out the matrix to standard output. */
+void mtrx_print(matrix_t *matrix) {
 	for (unsigned int i = 0; i < matrix->rows; ++i) {
 		for (unsigned int j = 0; j < matrix->columns; ++j)
 			printf("%f ", matrix->values[i][j]);
@@ -163,18 +195,13 @@ void matrix_print(matrix_t *matrix) {
 }
 
 
+/* Returns true if the matrix is square, false otherwise. */
 int mtrx_is_sqr(matrix_t *matrix) {
 	return matrix->rows == matrix->columns;
 }
 
 
-void vctr_print(vector_t *vector) {
-	for (unsigned int i = 0; i < vector->length; ++i)
-		printf("%f\n", vector->values[i]);
-}
-
-
-matrix_t *naive_matrix_multiply(matrix_t *A, matrix_t *B) {
+matrix_t *mtrx_naive_mult(matrix_t *A, matrix_t *B) {
 
 	// Create a new matrix to hold the result.
 	matrix_t *C = (matrix_t *)malloc(sizeof(matrix_t));
@@ -192,36 +219,22 @@ matrix_t *naive_matrix_multiply(matrix_t *A, matrix_t *B) {
 
 
 matrix_t *fast_matrix_multiply(matrix_t *A, matrix_t *B) {
-
+	//TODO
 }
 
 
-matrix_t *matrix_multiply(matrix_t *A, matrix_t *B) {
+matrix_t *mtrx_mult(matrix_t *A, matrix_t *B) {
 	
 	// Check for matrices inappropriately sized for multiplication.
 	if (A->columns != B->rows)
 		return NULL;
 
 	// Currently defaulting to naive multiplication.
-	return naive_matrix_multiply(A, B);
+	return mtrx_naive_mult(A, B);
 }
 
 
-matrix_t *copy_matrix(matrix_t *matrix) {
-
-	matrix_t *copy = (matrix_t *)malloc(sizeof(matrix_t));
-	matrix_init(copy, matrix->rows, matrix->columns);
-
-	for (unsigned int i = 0; i < matrix->rows; ++i) {
-		for (unsigned int j = 0; j < matrix->columns; ++j)
-			copy->values[i][j] = matrix->values[i][j];
-	}
-
-	return copy;
-}
-
-
-matrix_t *matrix_multiply_scalar(matrix_t *matrix, double scalar) {
+matrix_t *mtrx_scale(matrix_t *matrix, double scalar) {
 
 	matrix_t *multiple = (matrix_t *)malloc(sizeof(matrix_t));
 	matrix_init(multiple, matrix->rows, matrix->columns);
@@ -309,7 +322,7 @@ matrix_t *mtrx_pw_pow(matrix_t *A, matrix_t *B) {
 /*
 * Add two matrices.
 */
-matrix_t *matrix_add(matrix_t *A, matrix_t *B) {
+matrix_t *mtrx_add(matrix_t *A, matrix_t *B) {
 
 	// Check that matrices have the same dimensions.
 	if (!mtrx_eq_dim(A, B))
@@ -331,7 +344,7 @@ matrix_t *matrix_add(matrix_t *A, matrix_t *B) {
 /*
  * Subtract a matrix from another one.
  */
-matrix_t *matrix_subtract(matrix_t *A, matrix_t *B) {
+matrix_t *mtrx_subtract(matrix_t *A, matrix_t *B) {
 
 	// Check that matrices have the same dimensions.
 	if (!mtrx_eq_dim(A, B))
@@ -352,26 +365,8 @@ matrix_t *matrix_subtract(matrix_t *A, matrix_t *B) {
 }
 
 
-/* Stores the results of an LU decomposition. */
-typedef struct {
-	matrix_t *L;
-	matrix_t *U;
-	matrix_t *P;
-	unsigned int swaps;
-} lu_factors_t;
-
-
-/* Frees the memory associated with an lu_factors_t object. */
-void lu_factors_destroy(lu_factors_t *lu_factors) {
-	mtrx_destroy(lu_factors->L);
-	mtrx_destroy(lu_factors->U);
-	mtrx_destroy(lu_factors->P);
-	free(lu_factors);
-}
-
-
 /* Swap two rows in a matrix. */
-void mtrx_row_swap(matrix_t* matrix, unsigned int r1, unsigned int r2) {
+void mtrx_row_swap(matrix_t *matrix, unsigned int r1, unsigned int r2) {
 
 	double temp;
 
@@ -379,13 +374,34 @@ void mtrx_row_swap(matrix_t* matrix, unsigned int r1, unsigned int r2) {
 		temp = matrix->values[r1][i];
 		matrix->values[r1][i] = matrix->values[r2][i];
 		matrix->values[r2][i] = temp;
-	}
-		
+	}	
 }
 
 
+/* Swap two columns in a matrix. */
 void mtrx_col_swap(matrix_t *matrix, unsigned int c1, unsigned int c2) {
-	//TODO
+	
+	double temp;
+
+	for (unsigned int i = 0; i < matrix->rows; ++i) {
+		temp = matrix->values[i][c1];
+		matrix->values[i][c1] = matrix->values[i][c2];
+		matrix->values[1][c2] = temp;
+	}
+}
+
+
+/* Multiplies a row in the matrix by a scalar value. */
+void mtrx_scale_row(matrix_t *matrix, unsigned int row, double scalar) {
+	for (unsigned int i = 0; i < matrix->columns; ++i)
+		matrix->values[row][i] *= scalar;
+}
+
+
+/* Multiplies a column in the matrix by a scalar value. */
+void mtrx_scale_col(matrix_t *matrix, unsigned int col, double scalar) {
+	for (unsigned int i = 0; i < matrix->rows; ++i)
+		matrix->values[i][col] *= scalar;
 }
 
 
@@ -405,14 +421,57 @@ double mtrx_max(matrix_t *matrix) {
 }
 
 
+/* Returns the minimum value in the matrix. */
+double mtrx_min(matrix_t *matrix) {
 
-vector_t *mtrx_get_row(matrix_t *matrix, unsigned int row) {
-	//TODO
+	double smallest = matrix->values[0][0];
+
+	for (unsigned int i = 0; i < matrix->rows; ++i) {
+		for (unsigned int j = 0; j < matrix->columns; ++j) {
+			if (matrix->values[i][j] < smallest)
+				smallest = matrix->values[i][j];
+		}
+	}
+
+	return smallest;
 }
 
 
+/* Gets the row of a matrix as a vector. */
+vector_t *mtrx_get_row(matrix_t *matrix, unsigned int row) {
+	
+	vector_t *vector = vctr_empty(matrix->columns);
+
+	for (unsigned int i = 0; i < vector->length; ++i)
+		vector->values[i] = matrix->values[row][i];
+
+	return vector;
+}
+
+
+/* Gets the column of a matrix as a vector. */
 vector_t *mtrx_get_col(matrix_t *matrix, unsigned int col) {
-	//TODO
+	
+	vector_t *vector = vctr_empty(matrix->rows);
+
+	for (unsigned int i = 0; i < vector->length; ++i)
+		vector->values[i] = matrix->values[i][col];
+
+	return vector;
+}
+
+
+/* Generates the transpose of a matrix. */
+matrix_t *mtrx_transpose(matrix_t *matrix) {
+
+	matrix_t *transpose = mtrx_zeros(matrix->columns, matrix->rows);
+
+	for (unsigned int i = 0; i < matrix->rows; ++i) {
+		for (unsigned int j = 0; j < matrix->columns; ++j)
+			transpose->values[j][i] = matrix->values[i][j];
+	}
+
+	return transpose;
 }
 
 
@@ -432,20 +491,6 @@ void lu_decomposition_pivot(matrix_t *L, matrix_t *P, unsigned int col) {
 		mtrx_row_swap(L, col, pivot);
 		mtrx_row_swap(P, col, pivot);
 	}
-}
-
-
-/* Generates the transpose of a matrix. */
-matrix_t *mtrx_transpose(matrix_t *matrix) {
-
-	matrix_t *transpose = mtrx_zeros(matrix->columns, matrix->rows);
-
-	for (unsigned int i = 0; i < matrix->rows; ++i) {
-		for (unsigned int j = 0; j < matrix->columns; ++j)
-			transpose->values[j][i] = matrix->values[i][j];
-	}
-
-	return transpose;
 }
 
 
@@ -612,7 +657,7 @@ double vctr_mag(vector_t *vector) {
  * Solves a linear system of equations defined by [A][x]=[B],
  * where [A] is a matrix, and [x] and [B] are vectors. 
  */
-vector_t *solve_linear_system(matrix_t *A, vector_t *B) {
+vector_t *mtrx_solve(matrix_t *A, vector_t *B) {
 
 	// Use LU decomposition to decompose A into an upper and lower triangular matrix.
 	lu_factors_t *lu_factors = lu_decomposition(A);
@@ -629,9 +674,6 @@ vector_t *solve_linear_system(matrix_t *A, vector_t *B) {
 
 	return X;
 }
-
-
-
 
 
 double mtrx_det(matrix_t *A) {
@@ -678,6 +720,7 @@ void mtrx_set_row(matrix_t *matrix, vector_t *vector, unsigned int row) {
 }
 
 
+/* Determines the inverse of a matrix, if the matrix is invertible. */
 matrix_t *mtrx_inv(matrix_t *A) {
 
 	if (!mtrx_is_sqr(A))
@@ -718,7 +761,8 @@ matrix_t *mtrx_inv(matrix_t *A) {
 }
 
 
-matrix_t *submatrix(matrix_t *A, array_t *rows, array_t *columns) {
+/* Creates a submatrix from the given matrix. */
+matrix_t *mtrx_submatrix(matrix_t *A, array_t *rows, array_t *columns) {
 
 	matrix_t *sub = (matrix_t *)malloc(sizeof(matrix_t));
 	matrix_init(sub, rows->length, columns->length);
@@ -735,13 +779,14 @@ matrix_t *submatrix(matrix_t *A, array_t *rows, array_t *columns) {
 
 
 
-// Gauss-Siedel, Gaussian elimination, LU decomposition
+
 
 /*
 Helpful built ins:
 
 det()
-inv()
+cross product
+gauss-siedel
 
 */
 
