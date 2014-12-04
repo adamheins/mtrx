@@ -95,6 +95,11 @@ void vctr_print(vector_t *vector) {
 }
 
 
+/* Returns true if the two vectors are of equal length, false otherwise. */
+int vctr_eq_len(vector_t *A, vector_t *B) {
+	return (A->length == B->length);
+}
+
 
 /* Calculates the dot product of two vectors. */
 double vctr_dot_prod(vector_t *A, vector_t *B) {
@@ -324,23 +329,10 @@ matrix_t *mtrx_naive_mult(matrix_t *A, matrix_t *B) {
 	return C;
 }
 
+
 /*
- * Adds subsections of two matrices together, returning the result.
+ * Splits a block from an existing matrix, and returns it as a new matrix.
  */
-matrix_t *partial_add(matrix_t *A, U32 Ar1, U32 Ar2, U32 Ac1, U32 Ac2, matrix_t *B, U32 Br1, U32 Br2, U32 Bc1, U32 Bc2) {
-
-	U32 num_rows = Ar2 - Ar1;
-	U32 num_cols = Ac2 - Ac1;
-	matrix_t *C = mtrx_zeros(num_rows, num_cols);
-
-	for (U32 i = 0; i < num_rows; ++i) {
-		for (U32 j = 0; j < num_cols; ++j)
-			C->values[i][j] = A->values[Ar1 + i][Ac1 + j] + B->values[Br1 + i][Bc1 + j];
-	}
-	return C;
-}
-
-
 matrix_t *mtrx_split(matrix_t *matrix, U32 r1, U32 r2, U32 c1, U32 c2) {
 
 	U32 num_rows = r2 - r1;
@@ -356,25 +348,59 @@ matrix_t *mtrx_split(matrix_t *matrix, U32 r1, U32 r2, U32 c1, U32 c2) {
 }
 
 
+/*
+ * Splits a block from an existing matrix, and returns it as a new matrix. Also pads
+ * the new block matrix to a specified number of rows and columns.
+ */
+matrix_t *mtrx_padded_split(matrix_t *matrix, U32 r1, U32 r2, U32 c1, U32 c2, U32 rows, U32 cols) {
+
+	U32 num_rows = r2 - r1;
+	U32 num_cols = c2 - c1;
+	matrix_t *child_matrix = mtrx_zeros(rows, cols);
+
+	for (U32 i = 0; i < num_rows; ++i) {
+		for (U32 j = 0; j < num_cols; ++j)
+			child_matrix->values[i][j] = matrix->values[r1 + i][c1 + j];
+	}
+
+	return child_matrix;
+}
+
+
 /* Fast multiplication algorithm. */
 matrix_t *mtrx_strassen_mult(matrix_t *A, matrix_t *B) {
 
 	// Ending condition.
-	if (A->rows < 2 || A->columns < 2)
+	if (A->rows <= 1 || A->columns <= 1)
 		return mtrx_naive_mult(A, B);
 
+	U32 Ahr = round(A->rows / 2.0);
+	U32 Ahc = round(A->columns / 2.0);
+	U32 Bhr = round(B->rows / 2.0);
+	U32 Bhc = round(B->columns / 2.0);
+
 	// Split A into four submatrices.
-	matrix_t *A11 = mtrx_split(A, 0, A->rows / 2, 0, A->columns / 2);
-	matrix_t *A12 = mtrx_split(A, A->rows / 2, A->rows, 0, A->columns / 2);
-	matrix_t *A21 = mtrx_split(A, 0, A->rows / 2, A->columns / 2, A->columns);
-	matrix_t *A22 = mtrx_split(A, A->rows / 2, A->rows, A->columns / 2, A->columns);
+	matrix_t *A11 = mtrx_split(A, 0, Ahr, 0, Ahc);
+	matrix_t *A12 = mtrx_padded_split(A, 0, Ahr, Ahc, A->columns, Ahr, Ahc);
+	matrix_t *A21 = mtrx_padded_split(A, Ahr, A->rows, 0, Ahc, Ahr, Ahc);
+	matrix_t *A22 = mtrx_padded_split(A, Ahr, A->rows, Ahc, A->columns, Ahr, Ahc);
+
+	/*mtrx_print(A11);
+	printf("\n");
+	mtrx_print(A12);
+	printf("\n");
+	mtrx_print(A21);
+	printf("\n");
+	mtrx_print(A22);
+	printf("\n");*/
 
 	// Split B into four submatrices.
-	matrix_t *B11 = mtrx_split(B, 0, B->rows / 2, 0, B->columns / 2);
-	matrix_t *B12 = mtrx_split(B, B->rows / 2, B->rows, 0, B->columns / 2);
-	matrix_t *B21 = mtrx_split(B, 0, B->rows / 2, B->columns / 2, B->columns);
-	matrix_t *B22 = mtrx_split(B, B->rows / 2, B->rows, B->columns / 2, B->columns);
+	matrix_t *B11 = mtrx_split(B, 0, Bhr, 0, Bhc);
+	matrix_t *B12 = mtrx_padded_split(B, 0, Bhr, Bhc, B->columns, Bhr, Bhc);
+	matrix_t *B21 = mtrx_padded_split(B, Bhr, B->rows, 0, Bhc, Bhr, Bhc);
+	matrix_t *B22 = mtrx_padded_split(B, Bhr, B->rows, Bhc, B->columns, Bhr, Bhc);
 
+	// Calculate M matrices. This is the recursive section of the algorithm.
 	matrix_t *M1 = mtrx_strassen_mult(mtrx_add(A11, A22), mtrx_add(B11, B22));
 	matrix_t *M2 = mtrx_strassen_mult(mtrx_add(A21, A22), B11);
 	matrix_t *M3 = mtrx_strassen_mult(A11, mtrx_subtract(B12, B22));
@@ -383,22 +409,56 @@ matrix_t *mtrx_strassen_mult(matrix_t *A, matrix_t *B) {
 	matrix_t *M6 = mtrx_strassen_mult(mtrx_subtract(A21, A11), mtrx_add(B11, B12));
 	matrix_t *M7 = mtrx_strassen_mult(mtrx_subtract(A12, A22), mtrx_add(B21, B22));
 
+	mtrx_destroy(A11);
+	mtrx_destroy(A12);
+	mtrx_destroy(A21);
+	mtrx_destroy(A22);
 
+	mtrx_destroy(B11);
+	mtrx_destroy(B12);
+	mtrx_destroy(B21);
+	mtrx_destroy(B22);
+
+	// Calculate each quadrant of C from M matrices.
 	matrix_t *C11 = mtrx_add(mtrx_subtract(mtrx_add(M1, M4), M5), M7);
 	matrix_t *C12 = mtrx_add(M3, M5);
 	matrix_t *C21 = mtrx_add(M2, M4);
 	matrix_t *C22 = mtrx_add(mtrx_add(mtrx_subtract(M1, M2), M3), M6);
 
+	mtrx_destroy(M1);
+	mtrx_destroy(M2);
+	mtrx_destroy(M3);
+	mtrx_destroy(M4);
+	mtrx_destroy(M5);
+	mtrx_destroy(M6);
+	mtrx_destroy(M7);
+
 	matrix_t *C = mtrx_zeros(A->rows, B->columns);
 
 	for (U32 i = 0; i < C11->rows; ++i) {
-		for (U32 j = 0; j < C11->columns; ++j) {
+		for (U32 j = 0; j < C11->columns; ++j)
 			C->values[i][j] = C11->values[i][j];
-			C->values[i + C11->rows][j] = C12->values[i][j];
-			C->values[i][j + C11->columns] = C21->values[i][j];
-			C->values[i + C11->rows][j + C11->columns] = C22->values[i][j];
-		}
 	}
+
+	for (U32 i = 0; i < C11->rows; ++i) {
+		for (U32 j = 0; j < C->columns / 2; ++j)
+			C->values[i][j + C11->columns] = C12->values[i][j];
+	}
+
+	for (U32 i = 0; i < C->rows / 2; ++i) {
+		for (U32 j = 0; j < C11->columns; ++j)
+			C->values[i + C11->rows][j] = C21->values[i][j];
+	}
+
+	for (U32 i = 0; i < C->rows / 2; ++i) {
+		for (U32 j = 0; j < C->columns / 2; ++j)
+			C->values[i + C11->rows][j + C11->columns] = C22->values[i][j];
+	}
+
+	mtrx_destroy(C11);
+	mtrx_destroy(C12);
+	mtrx_destroy(C21);
+	mtrx_destroy(C22);
 
 	return C;
 }
@@ -730,21 +790,6 @@ lu_factors_t *lu_decomposition(matrix_t *A) {
 	lu_factors->P = P;
 	lu_factors->swaps = swaps;
 
-	// Testing.
-	/*
-	printf("L=\n");
-	matrix_print(L);
-	printf("\nU=\n");
-	matrix_print(U);
-	printf("\nP=\n");
-	matrix_print(P);
-	printf("\nA=\n");
-	matrix_print(A);
-	printf("\nprod=\n");
-	matrix_print(matrix_multiply(matrix_multiply(mtrx_transpose(P), L), U));
-	printf("\n");
-	*/
-
 	return lu_factors;
 }
 
@@ -783,12 +828,6 @@ vector_t *forward_sub(matrix_t *A, vector_t *B) {
 	}
 
 	return X;
-}
-
-
-/* Returns true if the two vectors are of equal length, false otherwise. */
-int vctr_eq_len(vector_t *A, vector_t *B) {
-	return (A->length == B->length);
 }
 
 
@@ -893,11 +932,83 @@ vector_t *mtrx_solve(matrix_t *A, vector_t *B) {
 	return X;
 }
 
+
+/*
+ * Checks if a matrix is diagonally dominant. Returns true if the matrix is
+ * diagonally dominant, false otherwise.
+ */
 int mtrx_is_diag_dom(matrix_t *matrix) {
+
+	// Iterate through each row of the matrix and check if that row fits the
+	// criteria for diagonal dominance.
+	for (U32 i = 0; i < matrix->rows; ++i) {
+		double sum = 0;
+
+		// Sum the values of the elements in the row that are not on the
+		// diagonal.
+		for (U32 j = 0; j < matrix->columns; ++j) {
+			if (j != i)
+				sum += fabs(matrix->values[i][j]);
+		}
+
+		// Absolute value of diagonal entry was not greater than or equal to 
+		// the sum of absolute values of the other entries. Matrix is not
+		// diagonally dominant.
+		if (fabs(matrix->values[i][i]) < sum)
+			return 0;
+	}
+
 	return 0;
 }
 
 
+int mtrx_make_diag_dom(matrix_t *matrix) {
+
+	if (!mtrx_is_sqr(matrix))
+		return 0;
+
+	U32 *mark = (U32 *)malloc(matrix->rows * sizeof(U32));
+
+	for (U32 i = 0; i < matrix->rows; ++i) {
+		U32 largest_col = 0;
+		double sum = 0;
+		for (U32 j = 1; j < matrix->columns; ++j) {
+			if (fabs(matrix->values[i][j]) > fabs(matrix->values[i][largest_col]))
+				largest_col = j;
+			sum += fabs(matrix->values[i][j]);
+		}
+
+		// Remove largest absolute value from the sum.
+		sum -= fabs(matrix->values[i][largest_col]);
+
+		// Check if this row's largest absolute value was not greater than or equal to
+		// the sum of the absolute values of the other elements. If so, the matrix cannot
+		// be rearranged into a diagonally dominant form.
+		if (fabs(matrix->values[i][largest_col]) < sum)
+			return 0;
+
+		// Another row already has its largest value in this column, so the
+		// matrix cannot be made diagonally dominant.
+		if (mark[largest_col] != -1)
+			return 0;
+		mark[largest_col] = i;
+	}
+
+	// Make the matrix diagonally dominant by swapping rows.
+	for (U32 i = 0; i < matrix->rows; ++i) {
+		if (mark[i] != i)
+			mtrx_row_swap(matrix, i, mark[i]);
+	}
+
+	// Matrix was successfully made diagonally dominant.
+	return 1;
+}
+
+
+/*
+ * Solve a linear system using the Gauss-Siedel iterative technique.
+ * The A matrix must be diagonally dominanant to ensure convergence.
+ */
 void mtrx_solve_gs(matrix_t *A, vector_t *B, vector_t *X, double tolerance) {
 
 	unsigned int max_iter = 1000000;
@@ -925,28 +1036,27 @@ void mtrx_solve_gs(matrix_t *A, vector_t *B, vector_t *X, double tolerance) {
 }
 
 
-/*
-Helpful built ins:
-
-gauss-siedel
-fast matrix mult
-
-*/
-
 int main() {
 
-	matrix_t *A = mtrx_rnd(16, 16, 10);
-	matrix_t *B = mtrx_rnd(16, 16, 10);
+	matrix_t *A = mtrx_rnd(5, 7, 10);
+	matrix_t *B = mtrx_rnd(7, 5, 10);
 
 	srand(time(0));
 
-	time_t now = time(0);
-	printf("%i\n", now);
-	mtrx_print(mtrx_strassen_mult(A, B));
-	printf("\n%i", time(0) - now);
+	//time_t now = time(0);
+	matrix_t *C = mtrx_mult(A, B);
+	mtrx_print(C);
+	//printf("Naive: %i\n", time(0) - now);
+	//now = time(0);
+	matrix_t *D = mtrx_strassen_mult(A, B);
+	printf("\n");
+	mtrx_print(D);
+	//printf("'Fast': %i\n", time(0) - now);
 
 	mtrx_destroy(A);
 	mtrx_destroy(B);
+	mtrx_destroy(C);
+	mtrx_destroy(D);
 
 	system("PAUSE");
 	return 0;
