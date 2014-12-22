@@ -385,15 +385,6 @@ matrix_t *mtrx_strassen_mult(matrix_t *A, matrix_t *B) {
 	matrix_t *A21 = mtrx_padded_split(A, Ahr, A->rows, 0, Ahc, Ahr, Ahc);
 	matrix_t *A22 = mtrx_padded_split(A, Ahr, A->rows, Ahc, A->columns, Ahr, Ahc);
 
-	/*mtrx_print(A11);
-	printf("\n");
-	mtrx_print(A12);
-	printf("\n");
-	mtrx_print(A21);
-	printf("\n");
-	mtrx_print(A22);
-	printf("\n");*/
-
 	// Split B into four submatrices.
 	matrix_t *B11 = mtrx_split(B, 0, Bhr, 0, Bhc);
 	matrix_t *B12 = mtrx_padded_split(B, 0, Bhr, Bhc, B->columns, Bhr, Bhc);
