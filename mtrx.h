@@ -37,7 +37,7 @@ typedef struct vector {
  * Defines a 2-dimensional matrix.                                           *
  *                                                                           *
  * Fields:                                                                   *
- *     values  - The 2D array of double precision values stored in the       * 
+ *     values  - The 2D array of double precision values stored in the       *
  *               matrix.                                                     *
  *	   rows    - The number of rows this matrix has.                         *
  *     columns - The number of columns this matrix has.                      *
@@ -56,7 +56,7 @@ typedef struct matrix {
  * Fields:                                                                   *
  *     values - The indexes contained by the indexer.                        *
  *     length - The length of the indexer.                                   *
- *****************************************************************************/             
+ *****************************************************************************/
 typedef struct indexer {
 	unsigned int *values;
 	unsigned int length;
@@ -77,7 +77,7 @@ typedef struct indexer {
  *     length - The length of the vector being created.                      *
  *                                                                           *
  * Returns: A pointer to the empty vector.                                   *
- *****************************************************************************/ 
+ *****************************************************************************/
 vector_t *vctr_empty(unsigned int);
 
 
@@ -119,7 +119,7 @@ vector_t *vctr_copy(vector_t *);
 /*****************************************************************************
  * Frees all of the memory associated with this vector and sets it equal to  *
  * NULL.                                                                     *
- *                                                                           * 
+ *                                                                           *
  * Fields:                                                                   *
  *     vector - The vector to be freed.                                      *
  *                                                                           *
@@ -149,11 +149,11 @@ void vctr_print(vector_t *);
  *                                                                           *
  * Fields:                                                                   *
  *     A - The first vector being compared.                                  *
- *     B - The second vector being compared.                                 * 
+ *     B - The second vector being compared.                                 *
  *                                                                           *
  * Returns: True if the vectors have equal length, false otherwise.          *
  *****************************************************************************/
-int vctr_eq_len(vector_t *, vector_t *);
+bool vctr_eq_len(vector_t *, vector_t *);
 
 
 /*****************************************************************************
@@ -166,7 +166,7 @@ int vctr_eq_len(vector_t *, vector_t *);
  *                                                                           *
  * Returns: True if the vectors are equal, false otherwise.                  *
  *****************************************************************************/
-int vctr_eq(vector_t *, vector_t *);
+bool vctr_eq(vector_t *, vector_t *);
 
 
 /*------------------------------- Operations --------------------------------*/
@@ -200,7 +200,7 @@ vector_t *vctr_cross_prod(vector_t *, vector_t *);
  * Calculates the magnitude of a vector.                                     *
  *                                                                           *
  * Fields:                                                                   *
- *     vector - The vector for which the magnitude is being calculated.      * 
+ *     vector - The vector for which the magnitude is being calculated.      *
  *                                                                           *
  * Returns: The magnitude of the vector.                                     *
  *****************************************************************************/
@@ -649,7 +649,7 @@ double mtrx_det(matrix_t *);
  * square.                                                                   *
  *                                                                           *
  * Fields:                                                                   *
- *     matrix - The matrix of which to find the inverse.                     * 
+ *     matrix - The matrix of which to find the inverse.                     *
  *                                                                           *
  * Returns: The inverse matrix. If the matrix is not square or is not        *
  *     invertible, returns NULL instead.                                     *
@@ -659,7 +659,7 @@ matrix_t *mtrx_inv(matrix_t *);
 /*----------------------------- System Solving ------------------------------*/
 
 /*****************************************************************************
- * Solves a system of linear equations of the from Ax = b, where A is a      * 
+ * Solves a system of linear equations of the from Ax = b, where A is a      *
  * matrix and b is a vector, and x is the unknown solution vector.           *
  *                                                                           *
  * Fields:                                                                   *
