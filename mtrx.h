@@ -7,6 +7,7 @@
  * Last Updated: 2014-11-29                                                  *
  *****************************************************************************/
 
+#include <stdint.h>
 #include <stdbool.h>
 
 #ifndef MTRX_H_
@@ -17,19 +18,22 @@
  *                               STRUCTURES                                  *
  *===========================================================================*/
 
+/*****************************************************************************
+ * Defines a scalar type.                                                    *
+ *****************************************************************************/
 typedef double scalar_t;
 
 
 /*****************************************************************************
-* Defines a 1-dimensional vector.                                           *
-*                                                                           *
-* Fields:                                                                   *
-*     values - The array of double precision values stored in the vector.   *
-*     length - The length of the vector.                                    *
-*****************************************************************************/
+ * Defines a 1-dimensional vector.                                           *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     values - The array of double precision values stored in the vector.   *
+ *     length - The length of the vector.                                    *
+ *****************************************************************************/
 typedef struct vector {
-	double *values;
-	unsigned int length;
+	scalar_t *values;
+	size_t length;
 } vector_t;
 
 
@@ -43,9 +47,9 @@ typedef struct vector {
  *     columns - The number of columns this matrix has.                      *
  *****************************************************************************/
 typedef struct matrix {
-	double **values;
-	unsigned int rows;
-	unsigned int columns;
+	scalar_t **values;
+	size_t rows;
+	size_t columns;
 } matrix_t;
 
 
@@ -58,8 +62,8 @@ typedef struct matrix {
  *     length - The length of the indexer.                                   *
  *****************************************************************************/
 typedef struct indexer {
-	unsigned int *values;
-	unsigned int length;
+	size_t *values;
+	size_t length;
 } indexer_t;
 
 
@@ -78,7 +82,7 @@ typedef struct indexer {
  *                                                                           *
  * Returns: A pointer to the empty vector.                                   *
  *****************************************************************************/
-vector_t *vctr_empty(unsigned int);
+vector_t *vctr_empty(size_t);
 
 
 /*****************************************************************************
@@ -89,7 +93,7 @@ vector_t *vctr_empty(unsigned int);
  *                                                                           *
  * Returns: A pointer to the created vector.                                 *
  *****************************************************************************/
-vector_t *vctr_zeros(unsigned int);
+vector_t *vctr_zeros(size_t);
 
 
 /*****************************************************************************
@@ -100,7 +104,7 @@ vector_t *vctr_zeros(unsigned int);
  *                                                                           *
  * Returns: A pointer to the created vector.                                 *
  *****************************************************************************/
-vector_t *vctr_ones(unsigned int);
+vector_t *vctr_ones(size_t);
 
 
 /*****************************************************************************
@@ -180,7 +184,7 @@ bool vctr_eq(vector_t *, vector_t *);
  *                                                                           *
  * Returns: The dot (scalar) product of the two vectors.                     *
  *****************************************************************************/
-double vctr_dot_prod(vector_t *, vector_t *);
+scalar_t vctr_dot_prod(vector_t *, vector_t *);
 
 
 /*****************************************************************************
@@ -204,7 +208,7 @@ vector_t *vctr_cross_prod(vector_t *, vector_t *);
  *                                                                           *
  * Returns: The magnitude of the vector.                                     *
  *****************************************************************************/
-double vctr_mag(vector_t *);
+scalar_t vctr_mag(vector_t *);
 
 
 /*===========================================================================*
@@ -223,7 +227,7 @@ double vctr_mag(vector_t *);
  *                                                                           *
  * Returns: A pointer to the created matrix.                                 *
  *****************************************************************************/
-matrix_t *mtrx_zeros(unsigned int, unsigned int);
+matrix_t *mtrx_zeros(size_t, size_t);
 
 
 /*****************************************************************************
@@ -236,7 +240,7 @@ matrix_t *mtrx_zeros(unsigned int, unsigned int);
  *                                                                           *
  * Returns: A pointer to the created matrix.                                 *
  *****************************************************************************/
-matrix_t *mtrx_ones(unsigned int, unsigned int);
+matrix_t *mtrx_ones(size_t, size_t);
 
 
 /*****************************************************************************
@@ -247,7 +251,7 @@ matrix_t *mtrx_ones(unsigned int, unsigned int);
  *                                                                           *
  * Returns: A pointer to the created identity matrix.                        *
  *****************************************************************************/
-matrix_t *mtrx_id(unsigned int);
+matrix_t *mtrx_id(size_t);
 
 
 /*****************************************************************************
@@ -259,6 +263,20 @@ matrix_t *mtrx_id(unsigned int);
  * Returns: A pointer to the created diagonal matrix.                        *
  *****************************************************************************/
 matrix_t *mtrx_diag(vector_t *);
+
+
+/*****************************************************************************
+ * Creates a new a matrix filled with random positive integers, up to the    *
+ * given maximum value.                                                      *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     rows - The number of rows in the matrix.                              *
+ *     cols - The number of columns in the matrix.                           *
+ *     max - The maximum possible value in the matrix.                       *
+ *                                                                           *
+ * Returns: A pointer to the new matrix copy.                                *
+ *****************************************************************************/
+matrix_t *mtrx_rnd(size_t, size_t, uint32_t);
 
 
 /*****************************************************************************
@@ -346,7 +364,7 @@ bool mtrx_eq(matrix_t *, matrix_t *);
  *                                                                           *
  * Returns: The maximum value in the matrix.                                 *
  *****************************************************************************/
-double mtrx_max(matrix_t *);
+scalar_t mtrx_max(matrix_t *);
 
 
 /*****************************************************************************
@@ -357,34 +375,10 @@ double mtrx_max(matrix_t *);
  *                                                                           *
  * Returns: The minimum value in the matrix.                                 *
  *****************************************************************************/
-double mtrx_min(matrix_t *);
+scalar_t mtrx_min(matrix_t *);
 
 
 /*--------------------------- Matrix Arithmetic -----------------------------*/
-
-/*****************************************************************************
- * Multiplies two matrices together.                                         *
- *                                                                           *
- * Fields:                                                                   *
- *     A - The first matrix, of size m x n.                                  *
- *     B - The second matrix, of size n x p.                                 *
- *                                                                           *
- * Returns: A m x p matrix that is the result of multiplying A and B.        *
- *****************************************************************************/
-matrix_t *mtrx_mult(matrix_t *, matrix_t *);
-
-
-/*****************************************************************************
- * Scales every element in the matrix by a scalar value.                     *
- *                                                                           *
- * Fields:                                                                   *
- *     matrix - The matrix to be scaled.                                     *
- *     scalar - The value by which to scale.                                 *
- *                                                                           *
- * Returns: A new scaled matrix.                                             *
- *****************************************************************************/
-matrix_t *mtrx_scale(matrix_t *, double);
-
 
 /*****************************************************************************
  * Adds to matrices together.                                                *
@@ -408,6 +402,30 @@ matrix_t *mtrx_add(matrix_t *, matrix_t *);
  * Returns: A new matrix which is equal to B subtracted from A.              *
  *****************************************************************************/
 matrix_t *mtrx_subtract(matrix_t *, matrix_t *);
+
+
+/*****************************************************************************
+ * Scales every element in the matrix by a scalar value.                     *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     matrix - The matrix to be scaled.                                     *
+ *     scalar - The value by which to scale.                                 *
+ *                                                                           *
+ * Returns: A new scaled matrix.                                             *
+ *****************************************************************************/
+matrix_t *mtrx_scale(matrix_t *, scalar_t);
+
+
+/*****************************************************************************
+ * Multiplies two matrices together.                                         *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     A - The first matrix, of size m x n.                                  *
+ *     B - The second matrix, of size n x p.                                 *
+ *                                                                           *
+ * Returns: A m x p matrix that is the result of multiplying A and B.        *
+ *****************************************************************************/
+matrix_t *mtrx_mult(matrix_t *, matrix_t *);
 
 
 /*****************************************************************************
@@ -441,6 +459,7 @@ vector_t *mtrx_mult_vctr(matrix_t *, vector_t *);
  *****************************************************************************/
 matrix_t *mtrx_pw_mult(matrix_t *, matrix_t *);
 
+
 /*****************************************************************************
  * Performs pointwise division of two matrices. The resulting matrix         *
  * consists of elements that are the quotient of the element in the same     *
@@ -457,6 +476,7 @@ matrix_t *mtrx_pw_mult(matrix_t *, matrix_t *);
  *     matrices.                                                             *
  *****************************************************************************/
 matrix_t *mtrx_pw_div(matrix_t *, matrix_t *);
+
 
 /*****************************************************************************
  * Performs pointwise exponentiation of two matrices. The resulting matrix   *
@@ -488,7 +508,7 @@ matrix_t *mtrx_pw_pow(matrix_t *, matrix_t *);
  *                                                                           *
  * Returns: void                                                             *
  *****************************************************************************/
-void mtrx_row_swap(matrix_t *, unsigned int, unsigned int);
+void mtrx_row_swap(matrix_t *, size_t, size_t);
 
 
 /*****************************************************************************
@@ -501,7 +521,7 @@ void mtrx_row_swap(matrix_t *, unsigned int, unsigned int);
  *                                                                           *
  * Returns: void                                                             *
  *****************************************************************************/
-void mtrx_col_swap(matrix_t *, unsigned int, unsigned int);
+void mtrx_col_swap(matrix_t *, size_t, size_t);
 
 
 /*****************************************************************************
@@ -515,7 +535,7 @@ void mtrx_col_swap(matrix_t *, unsigned int, unsigned int);
  *                                                                           *
  * Returns: void                                                             *
  *****************************************************************************/
-void mtrx_scale_row(matrix_t *, unsigned int, double);
+void mtrx_scale_row(matrix_t *, size_t, scalar_t);
 
 
 /*****************************************************************************
@@ -529,7 +549,7 @@ void mtrx_scale_row(matrix_t *, unsigned int, double);
  *                                                                           *
  * Returns: void                                                             *
  *****************************************************************************/
-void mtrx_scale_col(matrix_t *, unsigned int, double);
+void mtrx_scale_col(matrix_t *, size_t, scalar_t);
 
 
 /*----------------- Row and Column Accessors and Mutators -------------------*/
@@ -543,7 +563,7 @@ void mtrx_scale_col(matrix_t *, unsigned int, double);
  *                                                                           *
  * Returns: A vector containing the values of the row.                       *
  *****************************************************************************/
-vector_t *mtrx_get_row(matrix_t *, unsigned int);
+vector_t *mtrx_get_row(matrix_t *, size_t);
 
 
 /*****************************************************************************
@@ -555,7 +575,7 @@ vector_t *mtrx_get_row(matrix_t *, unsigned int);
  *                                                                           *
  * Returns: A vector containing the values of the column.                    *
  *****************************************************************************/
-vector_t *mtrx_get_col(matrix_t *, unsigned int);
+vector_t *mtrx_get_col(matrix_t *, size_t);
 
 
 /*****************************************************************************
@@ -569,7 +589,7 @@ vector_t *mtrx_get_col(matrix_t *, unsigned int);
  *                                                                           *
  * Returns: void                                                             *
  *****************************************************************************/
-void mtrx_set_row(matrix_t *, vector_t *, unsigned int);
+void mtrx_set_row(matrix_t *, vector_t *, size_t);
 
 
 /*****************************************************************************
@@ -583,10 +603,25 @@ void mtrx_set_row(matrix_t *, vector_t *, unsigned int);
  *                                                                           *
  * Returns: void                                                             *
  *****************************************************************************/
-void mtrx_set_col(matrix_t *, vector_t *, unsigned int);
+void mtrx_set_col(matrix_t *, vector_t *, size_t);
 
 
 /*----------------------------- Sub-matrices --------------------------------*/
+
+/*****************************************************************************
+ * Copies the values in a block of an existing matrix into a new matrix.     *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     matrix - The matrix from which to get the submatrix.                  *
+ *     rows - The indexes of the rows in the original matrix to include in   *
+ *            the submatrix.                                                 *
+ *     cols - The indexes of the columns in the original matrix to include   *
+ *            in the submatrix.                                              *
+ *                                                                           *
+ * Returns: A new matrix representing the submatrix.                         *
+ *****************************************************************************/
+matrix_t *mtrx_sub_matrix(matrix_t *, indexer_t *, indexer_t *);
+
 
 /*****************************************************************************
  * Copies the values in a block of an existing matrix into a new matrix.     *
@@ -601,22 +636,7 @@ void mtrx_set_col(matrix_t *, vector_t *, unsigned int);
  *                                                                           *
  * Returns: A new matrix representing the block.                             *
  *****************************************************************************/
-matrix_t *mtrx_sub_block(matrix_t *, unsigned int, unsigned int, unsigned int, unsigned int);
-
-
-/*****************************************************************************
- * Copies the values in a block of an existing matrix into a new matrix.     *
- *                                                                           *
- * Fields:                                                                   *
- *     matrix - The matrix from which to get the submatrix.                  *
- *     rows - The indexes of the rows in the original matrix to include in   *
- *            the submatrix.                                                 *
- *     cols - The indexes of the columns in the original matrix to include   *
- *            in the submatrix.                                              *
- *                                                                           *
- * Returns: A new matrix representing the submatrix.                         *
- *****************************************************************************/
-matrix_t *mtrx_submatrix(matrix_t *, indexer_t *, indexer_t *);
+matrix_t *mtrx_sub_block(matrix_t *, size_t, size_t, size_t, size_t);
 
 
 /*------------------------------- Operations --------------------------------*/
@@ -641,7 +661,7 @@ matrix_t *mtrx_transpose(matrix_t *);
  *                                                                           *
  * Returns: The value of the determinant of the matrix.                      *
  *****************************************************************************/
-double mtrx_det(matrix_t *);
+scalar_t mtrx_det(matrix_t *);
 
 
 /*****************************************************************************
@@ -655,6 +675,7 @@ double mtrx_det(matrix_t *);
  *     invertible, returns NULL instead.                                     *
  *****************************************************************************/
 matrix_t *mtrx_inv(matrix_t *);
+
 
 /*----------------------------- System Solving ------------------------------*/
 
@@ -673,6 +694,31 @@ vector_t *mtrx_solve(matrix_t *, vector_t *);
 
 
 /*****************************************************************************
+ * Checks if a matrix is diagonally dominant.                                *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     matrix - The matrix to check for diagonal dominance.                  *
+ *                                                                           *
+ * Returns: True if the matrix is diagonally dominant, false otherwise.      *
+ *****************************************************************************/
+bool mtrx_is_diag_dom(matrix_t *);
+
+
+/*****************************************************************************
+ * Performs matrix operations to make the given matrix diagonally dominant.  *
+ * Some matrices cannot be made diagonally dominant, in which case the       *
+ * function will return false.                                               *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     matrix - The matrix to make diagonally dominant.                      *
+ *                                                                           *
+ * Returns: True if the matrix was successfully made diagonally dominant,    *
+ *     false otherwise.                                                      *
+ *****************************************************************************/
+bool mtrx_make_diag_dom(matrix_t *);
+
+
+/*****************************************************************************
  * Solves a system of linear equations of the from Ax = b, where A is a      *
  * matrix and b is a vector, and x is the unknown solution vector,           *
  * numerically.                                                              *
@@ -688,6 +734,6 @@ vector_t *mtrx_solve(matrix_t *, vector_t *);
  * Returns: A vector representing the solution to the linear system of       *
  *     equations, with each element being within the acceptable tolerance.   *
  *****************************************************************************/
-void mtrx_solve_gs(matrix_t *, vector_t *, vector_t *, double);
+void mtrx_solve_gs(matrix_t *, vector_t *, vector_t *, scalar_t);
 
 #endif
