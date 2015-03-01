@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -1024,29 +1025,3 @@ void mtrx_solve_gs(matrix_t *A, vector_t *B, vector_t *X, double tolerance) {
 	}
 }
 
-
-int main() {
-
-	matrix_t *A = mtrx_rnd(5, 7, 10);
-	matrix_t *B = mtrx_rnd(7, 5, 10);
-
-	srand(time(0));
-
-	//time_t now = time(0);
-	matrix_t *C = mtrx_mult(A, B);
-	mtrx_print(C);
-	//printf("Naive: %i\n", time(0) - now);
-	//now = time(0);
-	matrix_t *D = mtrx_strassen_mult(A, B);
-	printf("\n");
-	mtrx_print(D);
-	//printf("'Fast': %i\n", time(0) - now);
-
-	mtrx_destroy(A);
-	mtrx_destroy(B);
-	mtrx_destroy(C);
-	mtrx_destroy(D);
-
-	system("PAUSE");
-	return 0;
-}

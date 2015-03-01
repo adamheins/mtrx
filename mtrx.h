@@ -7,6 +7,7 @@
  * Last Updated: 2014-11-29                                                  *
  *****************************************************************************/
 
+#include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
 
