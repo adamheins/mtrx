@@ -882,7 +882,6 @@ matrix_t *mtrx_inv(matrix_t *matrix) {
 	vector_t *X = back_sub(lu_factors->U, D);
 	mtrx_set_col(inverse, X, 0);
 
-
 	for (size_t i = 1; i < id_col->length; ++i) {
 		id_col->values[i - 1] = 0;
 		id_col->values[i] = 1;
@@ -890,14 +889,14 @@ matrix_t *mtrx_inv(matrix_t *matrix) {
 		C = mtrx_mult_vctr(lu_factors->P, id_col);
 		D = forward_sub(lu_factors->L, C);
 		X = back_sub(lu_factors->U, D);
-
 		mtrx_set_col(inverse, X, i);
+
+    vctr_destroy(C);
+    vctr_destroy(D);
+    vctr_destroy(X);
 	}
 
-	// Release memory from temporary objects.
-	vctr_destroy(C);
-	vctr_destroy(D);
-	vctr_destroy(X);
+  vctr_destroy(id_col);
 	lu_factors_destroy(lu_factors);
 
 	return inverse;
@@ -973,13 +972,17 @@ bool mtrx_make_diag_dom(matrix_t *matrix) {
 		// Check if this row's largest absolute value was not greater than or equal
     // to the sum of the absolute values of the other elements. If so, the
     // matrix cannot be rearranged into a diagonally dominant form.
-		if (fabs(matrix->values[i][largest_col]) < sum)
+		if (fabs(matrix->values[i][largest_col]) < sum) {
+      free(mark);
 			return false;
+    }
 
 		// Another row already has its largest value in this column, so the
 		// matrix cannot be made diagonally dominant.
-		if (mark[largest_col] != -1)
+		if (mark[largest_col] != -1) {
+      free(mark);
 			return false;
+    }
 		mark[largest_col] = i;
 	}
 
@@ -988,6 +991,8 @@ bool mtrx_make_diag_dom(matrix_t *matrix) {
 		if (mark[i] != i)
 			mtrx_row_swap(matrix, i, mark[i]);
 	}
+
+  free(mark);
 
 	// Matrix was successfully made diagonally dominant.
 	return true;
