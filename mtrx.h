@@ -71,7 +71,6 @@ typedef struct indexer {
  *                           VECTOR FUNCTIONS                                *
  *===========================================================================*/
 
-
 /*--------------------------- Initialization --------------------------------*/
 
 /*****************************************************************************
@@ -171,6 +170,30 @@ bool vctr_eq_len(vector_t *, vector_t *);
  * Returns: True if the vectors are equal, false otherwise.                  *
  *****************************************************************************/
 bool vctr_eq(vector_t *, vector_t *);
+
+
+/*------------------------------ Max and Min --------------------------------*/
+
+/*****************************************************************************
+ * Returns the maximum value in the vector.                                  *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     vector - The vector in which to find the maximum value.               *
+ *                                                                           *
+ * Returns: The maximum value in the vector.                                 *
+ *****************************************************************************/
+scalar_t vctr_max(vector_t *);
+
+
+/*****************************************************************************
+ * Returns the minimum value in the vector.                                  *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     vector - The vector in which to find the minimum value.               *
+ *                                                                           *
+ * Returns: The minimum value in the vector.                                 *
+ *****************************************************************************/
+scalar_t vctr_min(vector_t *);
 
 
 /*------------------------------- Operations --------------------------------*/
@@ -323,8 +346,7 @@ void mtrx_print(matrix_t *);
  * the same as the number columns in the matrix.                             *
  *                                                                           *
  * Fields:                                                                   *
- *     matrix - The matrix to check for squareness.                          *
- *                                                                           *
+ *     matrix - The matrix to check for squareness.                          * *                                                                           *
  * Returns: True if the matrix is square, false otherwise.                   *
  *****************************************************************************/
 bool mtrx_is_sqr(matrix_t *);
@@ -355,6 +377,8 @@ bool mtrx_eq_dim(matrix_t *, matrix_t *);
  *****************************************************************************/
 bool mtrx_eq(matrix_t *, matrix_t *);
 
+
+/*------------------------------ Max and Min --------------------------------*/
 
 /*****************************************************************************
  * Returns the maximum value in the matrix.                                  *

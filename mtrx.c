@@ -8,11 +8,11 @@
 #include "mtrx.h"
 
 
-/*=========================================================================================*
- *                             HELPER FUNCTIONS & STRUCTS                                  *
- *=========================================================================================*/
+/*===========================================================================*
+ *                       HELPER FUNCTIONS AND STRUCTS                        *
+ *===========================================================================*/
 
-/* Stores the results of an LU decomposition. */
+// Stores the results of an LU decomposition.
 typedef struct {
 	matrix_t *L;
 	matrix_t *U;
@@ -21,7 +21,7 @@ typedef struct {
 } lu_factors_t;
 
 
-/* Frees the memory associated with an lu_factors_t object. */
+// Frees the memory associated with an lu_factors_t object.
 void lu_factors_destroy(lu_factors_t *lu_factors) {
 	mtrx_destroy(lu_factors->L);
 	mtrx_destroy(lu_factors->U);
@@ -30,11 +30,10 @@ void lu_factors_destroy(lu_factors_t *lu_factors) {
 }
 
 
-/*
- * Splits a block from an existing matrix, and returns it as a new matrix. Also pads
- * the new block matrix to a specified number of rows and columns.
- */
-matrix_t *mtrx_padded_split(matrix_t *matrix, size_t r1, size_t r2, size_t c1, size_t c2, size_t rows, size_t cols) {
+// Splits a block from an existing matrix, and returns it as a new matrix. Also
+// pads the new block matrix to a specified number of rows and columns.
+matrix_t *mtrx_padded_split(matrix_t *matrix, size_t r1, size_t r2, size_t c1,
+    size_t c2, size_t rows, size_t cols) {
 
 	size_t num_rows = r2 - r1;
 	size_t num_cols = c2 - c1;
@@ -49,9 +48,8 @@ matrix_t *mtrx_padded_split(matrix_t *matrix, size_t r1, size_t r2, size_t c1, s
 }
 
 
-/* Performs pivoting to ensure a stable answer for LU decomposition. */
+// Performs pivoting to ensure a stable answer for LU decomposition.
 bool lu_decomposition_pivot(matrix_t *L, matrix_t *P, size_t col) {
-
 	size_t pivot = col;
 
 	// Find largest absolute value in the column. That will be the pivot.
@@ -70,9 +68,9 @@ bool lu_decomposition_pivot(matrix_t *L, matrix_t *P, size_t col) {
 }
 
 
-// A is nxn and B is nx1
+// Performs LU decomposition on a matrix, M, producing a lower- and an upper-
+// triangular matrix, L and U, such that [L][U] = [M].
 lu_factors_t *lu_decomposition(matrix_t *matrix) {
-
 	size_t n = matrix->rows;
 	size_t swaps = 0;
 
@@ -125,405 +123,8 @@ lu_factors_t *lu_decomposition(matrix_t *matrix) {
 }
 
 
-/* Backward subsitution. */
-vector_t *back_sub(matrix_t *A, vector_t *B) {
-
-	size_t n = A->rows;
-
-	vector_t *X = vctr_empty(n);
-
-	for (size_t i = n - 1; i >= 0; --i) {
-		X->values[i] = B->values[i];
-		for (size_t k = i + 1; k < n; ++k)
-			X->values[i] -= A->values[i][k] * X->values[k];
-		X->values[i] /= A->values[i][i];
-	}
-
-	return X;
-}
-
-
-/* Forward substitution. */
-vector_t *forward_sub(matrix_t *A, vector_t *B) {
-
-	size_t n = A->rows;
-
-	vector_t *X = vctr_empty(n);
-
-	// Forward substitution.
-	for (size_t i = 0; i < n; ++i) {
-		X->values[i] = B->values[i];
-		for (size_t k = 0; k < i; ++k)
-			X->values[i] -= A->values[i][k] * X->values[k];
-		X->values[i] /= A->values[i][i];
-	}
-
-	return X;
-}
-
-
-/*=========================================================================================*
- *                                  VECTOR FUNCTIONS                                       *
- *=========================================================================================*/
-
-vector_t *vctr_empty(size_t length) {
-
-	vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
-
-	vector->values = (scalar_t *)malloc(length * sizeof(scalar_t));
-	vector->length = length;
-
-	return vector;
-}
-
-
-vector_t *vctr_zeros(size_t length) {
-
-	vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
-
-	vector->values = (scalar_t *)calloc(length, sizeof(scalar_t));
-	vector->length = length;
-
-	return vector;
-}
-
-
-vector_t *vctr_ones(size_t length) {
-
-	vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
-
-	vector->values = (scalar_t *)malloc(length * sizeof(scalar_t));
-	vector->length = length;
-
-	for (size_t i = 0; i < length; ++i)
-		vector->values[i] = 1;
-
-	return vector;
-}
-
-
-vector_t *vctr_copy(vector_t *vector) {
-	vector_t *copy = vctr_empty(vector->length);
-	for (size_t i = 0; i < vector->length; ++i)
-		copy->values[i] = vector->values[i];
-	return copy;
-}
-
-
-/* Free the memory of the vector object. */
-void vctr_destroy(vector_t *vector) {
-	free(vector->values);
-	free(vector);
-	vector = NULL;
-}
-
-
-/* Prints out the vector to standard output. */
-void vctr_print(vector_t *vector) {
-	for (size_t i = 0; i < vector->length; ++i)
-		printf("%f\n", vector->values[i]);
-}
-
-
-/* Returns true if the two vectors are of equal length, false otherwise. */
-bool vctr_eq_len(vector_t *A, vector_t *B) {
-	return (A->length == B->length);
-}
-
-
-bool vctr_eq(vector_t *A, vector_t *B) {
-  if (!vctr_eq_len(A, B))
-    return false;
-  for (size_t i = 0; i < A->length; ++i) {
-    if (A->values[i] != B->values[i])
-      return false;
-  }
-  return true;
-}
-
-
-/* Calculates the dot product of two vectors. */
-scalar_t vctr_dot_prod(vector_t *A, vector_t *B) {
-
-	// Check that the vectors are of equal length.
-	if (!vctr_eq_len(A, B))
-		return 0;
-
-	scalar_t prod = 0;
-	for (size_t i = 0; i < A->length; ++i)
-		prod += A->values[i] * B->values[i];
-
-	return prod;
-}
-
-
-/* Calculates the cross product of two 3-dimensional vectors. */
-vector_t *vctr_cross_prod(vector_t *A, vector_t *B) {
-
-	// Vectors must be of length 3 to perform the cross product.
-	if (A->length != 3 || B->length != 3)
-		return NULL;
-
-	vector_t *C = vctr_empty(3);
-
-	C->values[0] = A->values[1] * B->values[2] - A->values[2] * B->values[1];
-	C->values[1] = A->values[2] * B->values[0] - A->values[0] * B->values[2];
-	C->values[2] = A->values[0] * B->values[1] - A->values[1] * B->values[0];
-
-	return C;
-}
-
-
-/* Calculates the magnitude of a vector. */
-scalar_t vctr_mag(vector_t *vector) {
-
-	scalar_t mag = 0;
-
-	for (size_t i = 0; i < vector->length; ++i)
-		mag += vector->values[i] * vector->values[i];
-
-	return sqrt(mag);
-}
-
-
-/*=========================================================================================*
- *                                  MATRIX FUNCTIONS                                       *
- *=========================================================================================*/
-
-
-matrix_t *mtrx_zeros(size_t rows, size_t cols) {
-
-	matrix_t *matrix = (matrix_t *)malloc(sizeof(matrix_t));
-
-	// Allocate the array of rows.
-	matrix->values = (scalar_t **)calloc(rows, sizeof(scalar_t *));
-
-	// Allocate the columns arrays.
-	for (size_t i = 0; i < rows; ++i)
-		matrix->values[i] = (scalar_t *)calloc(cols, sizeof(scalar_t));
-
-	matrix->rows = rows;
-	matrix->columns = cols;
-
-	return matrix;
-}
-
-
-matrix_t *mtrx_ones(size_t rows, size_t cols) {
-
-	matrix_t *matrix = (matrix_t *)malloc(sizeof(matrix_t));
-
-	// Allocate the array of rows.
-	matrix->values = (scalar_t **)malloc(rows * sizeof(scalar_t *));
-
-	// Allocate the columns arrays.
-	for (size_t i = 0; i < rows; ++i)
-		matrix->values[i] = (scalar_t *)malloc(cols * sizeof(scalar_t));
-
-	matrix->rows = rows;
-	matrix->columns = cols;
-
-	for (size_t r = 0; r < rows; ++r) {
-		for (size_t c = 0; c < cols; ++c)
-			matrix->values[r][c] = 1;
-	}
-
-	return matrix;
-}
-
-
-/*
-* Generates an identity matrix (1's on the diagonal, 0's elsewhere) of size n.
-*/
-matrix_t *mtrx_id(size_t n) {
-
-	// Initialize empty matrix.
-	matrix_t *id = mtrx_zeros(n, n);
-
-	// Fill diagonal with zeros.
-	for (size_t i = 0; i < n; ++i)
-		id->values[i][i] = 1;
-
-	return id;
-}
-
-
-matrix_t *mtrx_diag(vector_t *vector) {
-
-	matrix_t *matrix = mtrx_zeros(vector->length, vector->length);
-
-	for (size_t i = 0; i < vector->length; ++i)
-		matrix->values[i][i] = vector->values[i];
-
-	return matrix;
-}
-
-
-matrix_t *mtrx_rnd(size_t rows, size_t cols, uint32_t max) {
-	matrix_t *matrix = mtrx_zeros(rows, cols);
-
-	for (size_t i = 0; i < rows; ++i) {
-		for (size_t j = 0; j < cols; ++j)
-			matrix->values[i][j] = rand() % max;
-	}
-
-	return matrix;
-}
-
-
-/* Copies an existing matrix into a new one. */
-matrix_t *mtrx_copy(matrix_t *matrix) {
-
-	matrix_t *copy = mtrx_zeros(matrix->rows, matrix->columns);
-
-	for (size_t i = 0; i < matrix->rows; ++i) {
-		for (size_t j = 0; j < matrix->columns; ++j)
-			copy->values[i][j] = matrix->values[i][j];
-	}
-
-	return copy;
-}
-
-
-/* Free the memory associated with the matrix object. */
-void mtrx_destroy(matrix_t *matrix) {
-	for (size_t i = 0; i < matrix->rows; ++i)
-		free(matrix->values[i]);
-	free(matrix->values);
-	free(matrix);
-	matrix = NULL;
-}
-
-
-/* Print out the matrix to standard output. */
-void mtrx_print(matrix_t *matrix) {
-	for (size_t i = 0; i < matrix->rows; ++i) {
-		for (size_t j = 0; j < matrix->columns; ++j)
-			printf("%f ", matrix->values[i][j]);
-		printf("\n");
-	}
-}
-
-
-/* Returns true if the matrix is square, false otherwise. */
-bool mtrx_is_sqr(matrix_t *matrix) {
-	return matrix->rows == matrix->columns;
-}
-
-
-/* Returns true if the two matrices have equal dimensions, false otherwise. */
-bool mtrx_eq_dim(matrix_t *A, matrix_t *B) {
-	return (A->rows == B->rows && A->columns == B->columns);
-}
-
-
-bool mtrx_eq(matrix_t *A, matrix_t *B) {
-  if (!mtrx_eq_dim(A, B))
-    return false;
-  for (size_t i = 0; i < A->rows; ++i) {
-    for (size_t j = 0; j < A->columns; ++j) {
-      if (A->values[i][j] != B->values[i][j])
-        return false;
-    }
-  }
-  return true;
-}
-
-
-/* Returns the maximum value in the matrix. */
-scalar_t mtrx_max(matrix_t *matrix) {
-
-	scalar_t largest = matrix->values[0][0];
-
-	for (size_t i = 0; i < matrix->rows; ++i) {
-		for (size_t j = 0; j < matrix->columns; ++j) {
-			if (matrix->values[i][j] > largest)
-				largest = matrix->values[i][j];
-		}
-	}
-
-	return largest;
-}
-
-
-/* Returns the minimum value in the matrix. */
-scalar_t mtrx_min(matrix_t *matrix) {
-
-	scalar_t smallest = matrix->values[0][0];
-
-	for (size_t i = 0; i < matrix->rows; ++i) {
-		for (size_t j = 0; j < matrix->columns; ++j) {
-			if (matrix->values[i][j] < smallest)
-				smallest = matrix->values[i][j];
-		}
-	}
-
-	return smallest;
-}
-
-
-/*
-* Add two matrices.
-*/
-matrix_t *mtrx_add(matrix_t *A, matrix_t *B) {
-
-	// Check that matrices have the same dimensions.
-	if (!mtrx_eq_dim(A, B))
-		return NULL;
-
-	// Create a new matrix to hold the result.
-	matrix_t *C = mtrx_zeros(A->rows, A->columns);
-
-	for (size_t i = 0; i < A->rows; ++i) {
-		for (size_t j = 0; j < A->columns; j++)
-			C->values[i][j] = A->values[i][j] + B->values[i][j];
-	}
-
-	return C;
-}
-
-
-/*
-* Subtract a matrix from another one.
-*/
-matrix_t *mtrx_subtract(matrix_t *A, matrix_t *B) {
-
-	// Check that matrices have the same dimensions.
-	if (!mtrx_eq_dim(A, B))
-		return NULL;
-
-	// Create a new matrix to hold the result.
-	matrix_t *C = mtrx_zeros(A->rows, A->columns);
-
-	// Subtract each element in B from the corresponding element in A to
-	// generate the resulting element in C.
-	for (size_t i = 0; i < A->rows; ++i) {
-		for (size_t j = 0; j < A->columns; j++)
-			C->values[i][j] = A->values[i][j] - B->values[i][j];
-	}
-
-	return C;
-}
-
-
-/* Scale the entire matrix by a scalar constant. */
-matrix_t *mtrx_scale(matrix_t *matrix, scalar_t scalar) {
-
-	matrix_t *multiple = mtrx_zeros(matrix->rows, matrix->columns);
-
-	for (size_t i = 0; i < matrix->rows; ++i) {
-		for (size_t j = 0; j < matrix->columns; ++j)
-			multiple->values[i][j] = matrix->values[i][j] * scalar;
-	}
-
-	return multiple;
-}
-
-
-/* Naive multiplication algorithm. */
+// Perform the naive matrix multiplication algorithm.
 matrix_t *mtrx_naive_mult(matrix_t *A, matrix_t *B) {
-
-	// Create a new matrix to hold the result.
 	matrix_t *C = mtrx_zeros(A->rows, B->columns);
 
 	for (size_t i = 0; i < B->columns; ++i) {
@@ -536,7 +137,9 @@ matrix_t *mtrx_naive_mult(matrix_t *A, matrix_t *B) {
 }
 
 
-/* Fast multiplication algorithm. */
+// Perform the 'fast' Strassen matrix multiplication algorithm. Breaks down the
+// matrices recursively and only uses seven multiplications rather than the
+// usual eight used by the naive algorithm. Faster for larger matrices.
 matrix_t *mtrx_strassen_mult(matrix_t *A, matrix_t *B) {
 
 	// Ending condition.
@@ -566,8 +169,10 @@ matrix_t *mtrx_strassen_mult(matrix_t *A, matrix_t *B) {
 	matrix_t *M3 = mtrx_strassen_mult(A11, mtrx_subtract(B12, B22));
 	matrix_t *M4 = mtrx_strassen_mult(A22, mtrx_subtract(B21, B11));
 	matrix_t *M5 = mtrx_strassen_mult(mtrx_add(A11, A12), B22);
-	matrix_t *M6 = mtrx_strassen_mult(mtrx_subtract(A21, A11), mtrx_add(B11, B12));
-	matrix_t *M7 = mtrx_strassen_mult(mtrx_subtract(A12, A22), mtrx_add(B21, B22));
+	matrix_t *M6 = mtrx_strassen_mult(mtrx_subtract(A21, A11),
+      mtrx_add(B11, B12));
+	matrix_t *M7 = mtrx_strassen_mult(mtrx_subtract(A12, A22),
+      mtrx_add(B21, B22));
 
 	mtrx_destroy(A11);
 	mtrx_destroy(A12);
@@ -624,7 +229,411 @@ matrix_t *mtrx_strassen_mult(matrix_t *A, matrix_t *B) {
 }
 
 
-/* Multiply two matrices together. */
+// Performs backward substitution to solve a system.
+vector_t *back_sub(matrix_t *A, vector_t *B) {
+	size_t n = A->rows;
+
+	vector_t *X = vctr_empty(n);
+
+	for (size_t i = n - 1; i >= 0; --i) {
+		X->values[i] = B->values[i];
+		for (size_t k = i + 1; k < n; ++k)
+			X->values[i] -= A->values[i][k] * X->values[k];
+		X->values[i] /= A->values[i][i];
+	}
+	return X;
+}
+
+
+// Performs forward substitution to solve a system.
+vector_t *forward_sub(matrix_t *A, vector_t *B) {
+	size_t n = A->rows;
+
+	vector_t *X = vctr_empty(n);
+
+	// Forward substitution.
+	for (size_t i = 0; i < n; ++i) {
+		X->values[i] = B->values[i];
+		for (size_t k = 0; k < i; ++k)
+			X->values[i] -= A->values[i][k] * X->values[k];
+		X->values[i] /= A->values[i][i];
+	}
+	return X;
+}
+
+
+/*===========================================================================*
+ *                           VECTOR FUNCTIONS                                *
+ *===========================================================================*/
+
+/*--------------------------- Initialization --------------------------------*/
+
+vector_t *vctr_empty(size_t length) {
+
+	vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
+
+	vector->values = (scalar_t *)malloc(length * sizeof(scalar_t));
+	vector->length = length;
+
+	return vector;
+}
+
+
+vector_t *vctr_zeros(size_t length) {
+
+	vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
+
+	vector->values = (scalar_t *)calloc(length, sizeof(scalar_t));
+	vector->length = length;
+
+	return vector;
+}
+
+
+vector_t *vctr_ones(size_t length) {
+
+	vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
+
+	vector->values = (scalar_t *)malloc(length * sizeof(scalar_t));
+	vector->length = length;
+
+	for (size_t i = 0; i < length; ++i)
+		vector->values[i] = 1;
+
+	return vector;
+}
+
+
+vector_t *vctr_copy(vector_t *vector) {
+	vector_t *copy = vctr_empty(vector->length);
+	for (size_t i = 0; i < vector->length; ++i)
+		copy->values[i] = vector->values[i];
+	return copy;
+}
+
+
+/*---------------------------- Deallocation ---------------------------------*/
+
+void vctr_destroy(vector_t *vector) {
+	free(vector->values);
+	free(vector);
+	vector = NULL;
+}
+
+
+/*-------------------------------- Display ----------------------------------*/
+
+void vctr_print(vector_t *vector) {
+	for (size_t i = 0; i < vector->length; ++i)
+		printf("%f\n", vector->values[i]);
+}
+
+
+/*------------------------------ Comparisons --------------------------------*/
+
+bool vctr_eq_len(vector_t *A, vector_t *B) {
+	return (A->length == B->length);
+}
+
+
+bool vctr_eq(vector_t *A, vector_t *B) {
+  if (!vctr_eq_len(A, B))
+    return false;
+  for (size_t i = 0; i < A->length; ++i) {
+    if (A->values[i] != B->values[i])
+      return false;
+  }
+  return true;
+}
+
+
+/*------------------------------ Max and Min --------------------------------*/
+
+scalar_t vctr_max(vector_t *vector) {
+  scalar_t max = vector->values[0];
+  for (size_t i = 1; i < vector->length; ++i) {
+    if (vector->values[i] > max)
+      max = vector->values[i];
+  }
+  return max;
+}
+
+
+scalar_t vctr_min(vector_t *vector) {
+  scalar_t min = vector->values[0];
+  for (size_t i = 1; i < vector->length; ++i) {
+    if (vector->values[i] < min)
+      min = vector->values[i];
+  }
+  return min;
+}
+
+
+/*------------------------------- Operations --------------------------------*/
+
+scalar_t vctr_dot_prod(vector_t *A, vector_t *B) {
+
+	// Check that the vectors are of equal length.
+	if (!vctr_eq_len(A, B))
+		return 0;
+
+	scalar_t prod = 0;
+	for (size_t i = 0; i < A->length; ++i)
+		prod += A->values[i] * B->values[i];
+
+	return prod;
+}
+
+
+vector_t *vctr_cross_prod(vector_t *A, vector_t *B) {
+
+	// Vectors must be of length 3 to perform the cross product.
+	if (A->length != 3 || B->length != 3)
+		return NULL;
+
+	vector_t *C = vctr_empty(3);
+
+	C->values[0] = A->values[1] * B->values[2] - A->values[2] * B->values[1];
+	C->values[1] = A->values[2] * B->values[0] - A->values[0] * B->values[2];
+	C->values[2] = A->values[0] * B->values[1] - A->values[1] * B->values[0];
+
+	return C;
+}
+
+
+scalar_t vctr_mag(vector_t *vector) {
+
+	scalar_t mag = 0;
+
+	for (size_t i = 0; i < vector->length; ++i)
+		mag += vector->values[i] * vector->values[i];
+
+	return sqrt(mag);
+}
+
+
+/*===========================================================================*
+ *                           MATRIX FUNCTIONS                                *
+ *===========================================================================*/
+
+/*--------------------------- Initialization --------------------------------*/
+
+matrix_t *mtrx_zeros(size_t rows, size_t cols) {
+	matrix_t *matrix = (matrix_t *)malloc(sizeof(matrix_t));
+
+	// Allocate the array of rows.
+	matrix->values = (scalar_t **)calloc(rows, sizeof(scalar_t *));
+
+	// Allocate the columns arrays.
+	for (size_t i = 0; i < rows; ++i)
+		matrix->values[i] = (scalar_t *)calloc(cols, sizeof(scalar_t));
+
+	matrix->rows = rows;
+	matrix->columns = cols;
+
+	return matrix;
+}
+
+
+matrix_t *mtrx_ones(size_t rows, size_t cols) {
+	matrix_t *matrix = (matrix_t *)malloc(sizeof(matrix_t));
+
+	// Allocate the array of rows.
+	matrix->values = (scalar_t **)malloc(rows * sizeof(scalar_t *));
+
+	// Allocate the columns arrays.
+	for (size_t i = 0; i < rows; ++i)
+		matrix->values[i] = (scalar_t *)malloc(cols * sizeof(scalar_t));
+
+	matrix->rows = rows;
+	matrix->columns = cols;
+
+	for (size_t r = 0; r < rows; ++r) {
+		for (size_t c = 0; c < cols; ++c)
+			matrix->values[r][c] = 1;
+	}
+
+	return matrix;
+}
+
+
+matrix_t *mtrx_id(size_t n) {
+	matrix_t *id = mtrx_zeros(n, n);
+
+	// Fill diagonal with zeros.
+	for (size_t i = 0; i < n; ++i)
+		id->values[i][i] = 1;
+
+	return id;
+}
+
+
+matrix_t *mtrx_diag(vector_t *vector) {
+	matrix_t *matrix = mtrx_zeros(vector->length, vector->length);
+
+	for (size_t i = 0; i < vector->length; ++i)
+		matrix->values[i][i] = vector->values[i];
+
+	return matrix;
+}
+
+
+matrix_t *mtrx_rnd(size_t rows, size_t cols, uint32_t max) {
+	matrix_t *matrix = mtrx_zeros(rows, cols);
+
+	for (size_t i = 0; i < rows; ++i) {
+		for (size_t j = 0; j < cols; ++j)
+			matrix->values[i][j] = rand() % max;
+	}
+
+	return matrix;
+}
+
+
+matrix_t *mtrx_copy(matrix_t *matrix) {
+	matrix_t *copy = mtrx_zeros(matrix->rows, matrix->columns);
+
+	for (size_t i = 0; i < matrix->rows; ++i) {
+		for (size_t j = 0; j < matrix->columns; ++j)
+			copy->values[i][j] = matrix->values[i][j];
+	}
+
+	return copy;
+}
+
+
+/*---------------------------- Deallocation ---------------------------------*/
+
+void mtrx_destroy(matrix_t *matrix) {
+	for (size_t i = 0; i < matrix->rows; ++i)
+		free(matrix->values[i]);
+	free(matrix->values);
+	free(matrix);
+	matrix = NULL;
+}
+
+
+/*-------------------------------- Display ----------------------------------*/
+
+void mtrx_print(matrix_t *matrix) {
+	for (size_t i = 0; i < matrix->rows; ++i) {
+		for (size_t j = 0; j < matrix->columns; ++j)
+			printf("%f ", matrix->values[i][j]);
+		printf("\n");
+	}
+}
+
+
+/*------------------------------ Comparisons --------------------------------*/
+
+bool mtrx_is_sqr(matrix_t *matrix) {
+	return matrix->rows == matrix->columns;
+}
+
+
+bool mtrx_eq_dim(matrix_t *A, matrix_t *B) {
+	return (A->rows == B->rows && A->columns == B->columns);
+}
+
+
+bool mtrx_eq(matrix_t *A, matrix_t *B) {
+  if (!mtrx_eq_dim(A, B))
+    return false;
+  for (size_t i = 0; i < A->rows; ++i) {
+    for (size_t j = 0; j < A->columns; ++j) {
+      if (A->values[i][j] != B->values[i][j])
+        return false;
+    }
+  }
+  return true;
+}
+
+
+/*------------------------------ Max and Min --------------------------------*/
+
+scalar_t mtrx_max(matrix_t *matrix) {
+
+	scalar_t largest = matrix->values[0][0];
+
+	for (size_t i = 0; i < matrix->rows; ++i) {
+		for (size_t j = 0; j < matrix->columns; ++j) {
+			if (matrix->values[i][j] > largest)
+				largest = matrix->values[i][j];
+		}
+	}
+
+	return largest;
+}
+
+
+scalar_t mtrx_min(matrix_t *matrix) {
+
+	scalar_t smallest = matrix->values[0][0];
+
+	for (size_t i = 0; i < matrix->rows; ++i) {
+		for (size_t j = 0; j < matrix->columns; ++j) {
+			if (matrix->values[i][j] < smallest)
+				smallest = matrix->values[i][j];
+		}
+	}
+
+	return smallest;
+}
+
+
+/*--------------------------- Matrix Arithmetic -----------------------------*/
+
+matrix_t *mtrx_add(matrix_t *A, matrix_t *B) {
+
+	// Check that matrices have the same dimensions.
+	if (!mtrx_eq_dim(A, B))
+		return NULL;
+
+	// Create a new matrix to hold the result.
+	matrix_t *C = mtrx_zeros(A->rows, A->columns);
+
+	for (size_t i = 0; i < A->rows; ++i) {
+		for (size_t j = 0; j < A->columns; j++)
+			C->values[i][j] = A->values[i][j] + B->values[i][j];
+	}
+
+	return C;
+}
+
+
+matrix_t *mtrx_subtract(matrix_t *A, matrix_t *B) {
+
+	// Check that matrices have the same dimensions.
+	if (!mtrx_eq_dim(A, B))
+		return NULL;
+
+	// Create a new matrix to hold the result.
+	matrix_t *C = mtrx_zeros(A->rows, A->columns);
+
+	// Subtract each element in B from the corresponding element in A to
+	// generate the resulting element in C.
+	for (size_t i = 0; i < A->rows; ++i) {
+		for (size_t j = 0; j < A->columns; j++)
+			C->values[i][j] = A->values[i][j] - B->values[i][j];
+	}
+
+	return C;
+}
+
+
+matrix_t *mtrx_scale(matrix_t *matrix, scalar_t scalar) {
+
+	matrix_t *multiple = mtrx_zeros(matrix->rows, matrix->columns);
+
+	for (size_t i = 0; i < matrix->rows; ++i) {
+		for (size_t j = 0; j < matrix->columns; ++j)
+			multiple->values[i][j] = matrix->values[i][j] * scalar;
+	}
+
+	return multiple;
+}
+
+
 matrix_t *mtrx_mult(matrix_t *A, matrix_t *B) {
 
 	// Check for matrices inappropriately sized for multiplication.
@@ -635,7 +644,6 @@ matrix_t *mtrx_mult(matrix_t *A, matrix_t *B) {
 }
 
 
-/* Multiplies an (n x m) matrix with an (m x 1) vector. */
 vector_t *mtrx_mult_vctr(matrix_t *A, vector_t *B) {
 
 	if (A->columns != B->length)
@@ -652,10 +660,8 @@ vector_t *mtrx_mult_vctr(matrix_t *A, vector_t *B) {
 }
 
 
-/*
-* Pointwise multiplication of a matrix.
-* Multiplies each element of A by the corresponding element of B.
-*/
+/*------------------------- Pointwise Arithmetic ----------------------------*/
+
 matrix_t *mtrx_pw_mult(matrix_t *A, matrix_t *B) {
 
 	// Check that matrices have the same dimensions.
@@ -673,10 +679,6 @@ matrix_t *mtrx_pw_mult(matrix_t *A, matrix_t *B) {
 }
 
 
-/*
-* Pointwise division of a matrix.
-* Divides each element of A by the corresponding element of B.
-*/
 matrix_t *mtrx_pw_div(matrix_t *A, matrix_t *B) {
 
 	// Check that matrices have the same dimensions.
@@ -694,10 +696,6 @@ matrix_t *mtrx_pw_div(matrix_t *A, matrix_t *B) {
 }
 
 
-/*
- * Pointwise exponentiation of a matrix.
- * Raises each element of A to the power of the corresponding element of B.
- */
 matrix_t *mtrx_pw_pow(matrix_t *A, matrix_t *B) {
 
 	// Check that matrices have the same dimensions.
@@ -715,7 +713,8 @@ matrix_t *mtrx_pw_pow(matrix_t *A, matrix_t *B) {
 }
 
 
-/* Swap two rows in a matrix. */
+/*-------------------------- Matrix Manipulation ----------------------------*/
+
 void mtrx_row_swap(matrix_t *matrix, size_t r1, size_t r2) {
 
 	scalar_t temp;
@@ -728,7 +727,6 @@ void mtrx_row_swap(matrix_t *matrix, size_t r1, size_t r2) {
 }
 
 
-/* Swap two columns in a matrix. */
 void mtrx_col_swap(matrix_t *matrix, size_t c1, size_t c2) {
 
 	scalar_t temp;
@@ -741,23 +739,21 @@ void mtrx_col_swap(matrix_t *matrix, size_t c1, size_t c2) {
 }
 
 
-/* Multiplies a row in the matrix by a scalar value. */
 void mtrx_scale_row(matrix_t *matrix, size_t row, scalar_t scalar) {
 	for (size_t i = 0; i < matrix->columns; ++i)
 		matrix->values[row][i] *= scalar;
 }
 
 
-/* Multiplies a column in the matrix by a scalar value. */
 void mtrx_scale_col(matrix_t *matrix, size_t col, scalar_t scalar) {
 	for (size_t i = 0; i < matrix->rows; ++i)
 		matrix->values[i][col] *= scalar;
 }
 
 
-/* Gets the row of a matrix as a vector. */
-vector_t *mtrx_get_row(matrix_t *matrix, size_t row) {
+/*----------------- Row and Column Accessors and Mutators -------------------*/
 
+vector_t *mtrx_get_row(matrix_t *matrix, size_t row) {
 	vector_t *vector = vctr_empty(matrix->columns);
 
 	for (size_t i = 0; i < vector->length; ++i)
@@ -767,9 +763,7 @@ vector_t *mtrx_get_row(matrix_t *matrix, size_t row) {
 }
 
 
-/* Gets the column of a matrix as a vector. */
 vector_t *mtrx_get_col(matrix_t *matrix, size_t col) {
-
 	vector_t *vector = vctr_empty(matrix->rows);
 
 	for (size_t i = 0; i < vector->length; ++i)
@@ -779,7 +773,6 @@ vector_t *mtrx_get_col(matrix_t *matrix, size_t col) {
 }
 
 
-/* Sets the values in the specified row of a matrix to those of a vector. */
 void mtrx_set_row(matrix_t *matrix, vector_t *vector, size_t row) {
 
 	// Check if vector is the same length as the number of rows in the matrix.
@@ -792,7 +785,6 @@ void mtrx_set_row(matrix_t *matrix, vector_t *vector, size_t row) {
 }
 
 
-/* Sets the values in the specified column of a matrix to those of a vector. */
 void mtrx_set_col(matrix_t *matrix, vector_t *vector, size_t col) {
 
 	// Check if vector is the same length as the number of rows in the matrix.
@@ -807,7 +799,6 @@ void mtrx_set_col(matrix_t *matrix, vector_t *vector, size_t col) {
 
 /*----------------------------- Sub-matrices --------------------------------*/
 
-/* Creates a submatrix from the given matrix. */
 matrix_t *mtrx_sub_matrix(matrix_t *A, indexer_t *rows, indexer_t *columns) {
 
 	matrix_t *sub = mtrx_zeros(rows->length, columns->length);
@@ -821,10 +812,8 @@ matrix_t *mtrx_sub_matrix(matrix_t *A, indexer_t *rows, indexer_t *columns) {
 }
 
 
-/*
- * Splits a block from an existing matrix, and returns it as a new matrix.
- */
-matrix_t *mtrx_sub_block(matrix_t *matrix, size_t r1, size_t r2, size_t c1, size_t c2) {
+matrix_t *mtrx_sub_block(matrix_t *matrix, size_t r1, size_t r2, size_t c1,
+    size_t c2) {
 
 	size_t num_rows = r2 - r1;
 	size_t num_cols = c2 - c1;
@@ -839,7 +828,8 @@ matrix_t *mtrx_sub_block(matrix_t *matrix, size_t r1, size_t r2, size_t c1, size
 }
 
 
-/* Generates the transpose of a matrix. */
+/*------------------------------- Operations --------------------------------*/
+
 matrix_t *mtrx_transpose(matrix_t *matrix) {
 
 	matrix_t *transpose = mtrx_zeros(matrix->columns, matrix->rows);
@@ -853,7 +843,6 @@ matrix_t *mtrx_transpose(matrix_t *matrix) {
 }
 
 
-/* Calculates the determinant of the matrix. */
 scalar_t mtrx_det(matrix_t *A) {
 
 	// Check that the matrix is square.
@@ -875,7 +864,6 @@ scalar_t mtrx_det(matrix_t *A) {
 }
 
 
-/* Determines the inverse of a matrix, if the matrix is invertible. */
 matrix_t *mtrx_inv(matrix_t *matrix) {
 
 	if (!mtrx_is_sqr(matrix))
@@ -918,13 +906,10 @@ matrix_t *mtrx_inv(matrix_t *matrix) {
 
 /*----------------------------- System Solving ------------------------------*/
 
-/*
- * Solves a linear system of equations defined by [A][x]=[B],
- * where [A] is a matrix, and [x] and [B] are vectors.
- */
 vector_t *mtrx_solve(matrix_t *A, vector_t *B) {
 
-	// Use LU decomposition to decompose A into an upper and lower triangular matrix.
+	// Use LU decomposition to decompose A into an upper and lower triangular
+  // matrix.
 	lu_factors_t *lu_factors = lu_decomposition(A);
 
 	// Solve the system.
@@ -941,10 +926,6 @@ vector_t *mtrx_solve(matrix_t *A, vector_t *B) {
 }
 
 
-/*
- * Checks if a matrix is diagonally dominant. Returns true if the matrix is
- * diagonally dominant, false otherwise.
- */
 bool mtrx_is_diag_dom(matrix_t *matrix) {
 
 	// Iterate through each row of the matrix and check if that row fits the
@@ -971,7 +952,6 @@ bool mtrx_is_diag_dom(matrix_t *matrix) {
 
 
 bool mtrx_make_diag_dom(matrix_t *matrix) {
-
 	if (!mtrx_is_sqr(matrix))
 		return false;
 
@@ -990,9 +970,9 @@ bool mtrx_make_diag_dom(matrix_t *matrix) {
 		// Remove largest absolute value from the sum.
 		sum -= fabs(matrix->values[i][largest_col]);
 
-		// Check if this row's largest absolute value was not greater than or equal to
-		// the sum of the absolute values of the other elements. If so, the matrix cannot
-		// be rearranged into a diagonally dominant form.
+		// Check if this row's largest absolute value was not greater than or equal
+    // to the sum of the absolute values of the other elements. If so, the
+    // matrix cannot be rearranged into a diagonally dominant form.
 		if (fabs(matrix->values[i][largest_col]) < sum)
 			return false;
 
@@ -1014,12 +994,7 @@ bool mtrx_make_diag_dom(matrix_t *matrix) {
 }
 
 
-/*
- * Solve a linear system using the Gauss-Siedel iterative technique.
- * The A matrix must be diagonally dominanant to ensure convergence.
- */
 void mtrx_solve_gs(matrix_t *A, vector_t *B, vector_t *X, double tolerance) {
-
 	uint32_t max_iter = 1000000;
 	uint32_t iter = 0;
 
