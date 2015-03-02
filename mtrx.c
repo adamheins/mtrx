@@ -419,6 +419,23 @@ scalar_t vctr_mag(vector_t *vector) {
 
 /*--------------------------- Initialization --------------------------------*/
 
+matrix_t *mtrx_empty(size_t rows, size_t cols) {
+	matrix_t *matrix = (matrix_t *)malloc(sizeof(matrix_t));
+
+	// Allocate the array of rows.
+	matrix->values = (scalar_t **)malloc(rows * sizeof(scalar_t *));
+
+	// Allocate the columns arrays.
+	for (size_t i = 0; i < rows; ++i)
+		matrix->values[i] = (scalar_t *)malloc(cols * sizeof(scalar_t));
+
+	matrix->rows = rows;
+	matrix->columns = cols;
+
+	return matrix;
+}
+
+
 matrix_t *mtrx_zeros(size_t rows, size_t cols) {
 	matrix_t *matrix = (matrix_t *)malloc(sizeof(matrix_t));
 

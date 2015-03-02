@@ -242,6 +242,18 @@ scalar_t vctr_mag(vector_t *);
 /*--------------------------- Initialization --------------------------------*/
 
 /*****************************************************************************
+ * Creates a matrix with the specified number of rows and columns.           *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     rows - The number of rows in the matrix.                              *
+ *     cols - The number of columns in the matrix.                           *
+ *                                                                           *
+ * Returns: A pointer to the created matrix.                                 *
+ *****************************************************************************/
+matrix_t *mtrx_empty(size_t, size_t);
+
+
+/*****************************************************************************
  * Creates a matrix with the specified number of rows and columns and all    *
  * values initialized to zero.                                               *
  *                                                                           *
