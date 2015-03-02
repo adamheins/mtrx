@@ -82,7 +82,7 @@ typedef struct indexer {
  *                                                                           *
  * Returns: A pointer to the empty vector.                                   *
  *****************************************************************************/
-vector_t *vctr_empty(size_t);
+vector_t *vctr_empty(size_t length);
 
 
 /*****************************************************************************
@@ -93,7 +93,7 @@ vector_t *vctr_empty(size_t);
  *                                                                           *
  * Returns: A pointer to the created vector.                                 *
  *****************************************************************************/
-vector_t *vctr_zeros(size_t);
+vector_t *vctr_zeros(size_t length);
 
 
 /*****************************************************************************
@@ -104,7 +104,7 @@ vector_t *vctr_zeros(size_t);
  *                                                                           *
  * Returns: A pointer to the created vector.                                 *
  *****************************************************************************/
-vector_t *vctr_ones(size_t);
+vector_t *vctr_ones(size_t length);
 
 
 /*****************************************************************************
@@ -115,7 +115,7 @@ vector_t *vctr_ones(size_t);
  *                                                                           *
  * Returns: A pointer to the new copied vector.                              *
  *****************************************************************************/
-vector_t *vctr_copy(vector_t *);
+vector_t *vctr_copy(vector_t *vector);
 
 
 /*---------------------------- Deallocation ---------------------------------*/
@@ -129,7 +129,7 @@ vector_t *vctr_copy(vector_t *);
  *                                                                           *
  * Returns: void                                                             *
  *****************************************************************************/
-void vctr_destroy(vector_t *);
+void vctr_destroy(vector_t *vector);
 
 
 /*-------------------------------- Display ----------------------------------*/
@@ -142,7 +142,7 @@ void vctr_destroy(vector_t *);
  *                                                                           *
  * Returns: void                                                             *
  *****************************************************************************/
-void vctr_print(vector_t *);
+void vctr_print(vector_t * vector);
 
 
 /*------------------------------ Comparisons --------------------------------*/
@@ -157,7 +157,7 @@ void vctr_print(vector_t *);
  *                                                                           *
  * Returns: True if the vectors have equal length, false otherwise.          *
  *****************************************************************************/
-bool vctr_eq_len(vector_t *, vector_t *);
+bool vctr_eq_len(vector_t *A, vector_t *B);
 
 
 /*****************************************************************************
@@ -170,7 +170,7 @@ bool vctr_eq_len(vector_t *, vector_t *);
  *                                                                           *
  * Returns: True if the vectors are equal, false otherwise.                  *
  *****************************************************************************/
-bool vctr_eq(vector_t *, vector_t *);
+bool vctr_eq(vector_t *A, vector_t *B);
 
 
 /*------------------------------ Max and Min --------------------------------*/
@@ -183,7 +183,7 @@ bool vctr_eq(vector_t *, vector_t *);
  *                                                                           *
  * Returns: The maximum value in the vector.                                 *
  *****************************************************************************/
-scalar_t vctr_max(vector_t *);
+scalar_t vctr_max(vector_t *vector);
 
 
 /*****************************************************************************
@@ -194,7 +194,7 @@ scalar_t vctr_max(vector_t *);
  *                                                                           *
  * Returns: The minimum value in the vector.                                 *
  *****************************************************************************/
-scalar_t vctr_min(vector_t *);
+scalar_t vctr_min(vector_t *vector);
 
 
 /*------------------------------- Operations --------------------------------*/
@@ -208,7 +208,7 @@ scalar_t vctr_min(vector_t *);
  *                                                                           *
  * Returns: The dot (scalar) product of the two vectors.                     *
  *****************************************************************************/
-scalar_t vctr_dot_prod(vector_t *, vector_t *);
+scalar_t vctr_dot_prod(vector_t *A, vector_t *B);
 
 
 /*****************************************************************************
@@ -221,7 +221,7 @@ scalar_t vctr_dot_prod(vector_t *, vector_t *);
  *                                                                           *
  * Returns: The cross (vector) product of the two vectors.                   *
  *****************************************************************************/
-vector_t *vctr_cross_prod(vector_t *, vector_t *);
+vector_t *vctr_cross_prod(vector_t *A, vector_t *B);
 
 
 /*****************************************************************************
@@ -232,7 +232,7 @@ vector_t *vctr_cross_prod(vector_t *, vector_t *);
  *                                                                           *
  * Returns: The magnitude of the vector.                                     *
  *****************************************************************************/
-scalar_t vctr_mag(vector_t *);
+scalar_t vctr_mag(vector_t *vector);
 
 
 /*===========================================================================*
@@ -250,7 +250,7 @@ scalar_t vctr_mag(vector_t *);
  *                                                                           *
  * Returns: A pointer to the created matrix.                                 *
  *****************************************************************************/
-matrix_t *mtrx_empty(size_t, size_t);
+matrix_t *mtrx_empty(size_t rows, size_t cols);
 
 
 /*****************************************************************************
@@ -263,7 +263,7 @@ matrix_t *mtrx_empty(size_t, size_t);
  *                                                                           *
  * Returns: A pointer to the created matrix.                                 *
  *****************************************************************************/
-matrix_t *mtrx_zeros(size_t, size_t);
+matrix_t *mtrx_zeros(size_t rows, size_t cols);
 
 
 /*****************************************************************************
@@ -276,7 +276,7 @@ matrix_t *mtrx_zeros(size_t, size_t);
  *                                                                           *
  * Returns: A pointer to the created matrix.                                 *
  *****************************************************************************/
-matrix_t *mtrx_ones(size_t, size_t);
+matrix_t *mtrx_ones(size_t rows, size_t cols);
 
 
 /*****************************************************************************
@@ -287,7 +287,7 @@ matrix_t *mtrx_ones(size_t, size_t);
  *                                                                           *
  * Returns: A pointer to the created identity matrix.                        *
  *****************************************************************************/
-matrix_t *mtrx_id(size_t);
+matrix_t *mtrx_id(size_t n);
 
 
 /*****************************************************************************
@@ -298,7 +298,7 @@ matrix_t *mtrx_id(size_t);
  *                                                                           *
  * Returns: A pointer to the created diagonal matrix.                        *
  *****************************************************************************/
-matrix_t *mtrx_diag(vector_t *);
+matrix_t *mtrx_diag(vector_t *vector);
 
 
 /*****************************************************************************
@@ -312,7 +312,7 @@ matrix_t *mtrx_diag(vector_t *);
  *                                                                           *
  * Returns: A pointer to the new matrix copy.                                *
  *****************************************************************************/
-matrix_t *mtrx_rnd(size_t, size_t, uint32_t);
+matrix_t *mtrx_rnd(size_t rows, size_t cols, uint32_t max);
 
 
 /*****************************************************************************
@@ -323,7 +323,7 @@ matrix_t *mtrx_rnd(size_t, size_t, uint32_t);
  *                                                                           *
  * Returns: A pointer to the new matrix copy.                                *
  *****************************************************************************/
-matrix_t *mtrx_copy(matrix_t *);
+matrix_t *mtrx_copy(matrix_t *matrix);
 
 
 /*---------------------------- Deallocation ---------------------------------*/
@@ -336,7 +336,7 @@ matrix_t *mtrx_copy(matrix_t *);
  *                                                                           *
  * Returns: void                                                             *
  *****************************************************************************/
-void mtrx_destroy(matrix_t *);
+void mtrx_destroy(matrix_t *matrix);
 
 
 /*-------------------------------- Display ----------------------------------*/
@@ -349,7 +349,7 @@ void mtrx_destroy(matrix_t *);
  *                                                                           *
  * Returns: void                                                             *
  *****************************************************************************/
-void mtrx_print(matrix_t *);
+void mtrx_print(matrix_t *matrix);
 
 
 /*------------------------------ Comparisons --------------------------------*/
@@ -362,7 +362,7 @@ void mtrx_print(matrix_t *);
  *     matrix - The matrix to check for squareness.                          * *                                                                           *
  * Returns: True if the matrix is square, false otherwise.                   *
  *****************************************************************************/
-bool mtrx_is_sqr(matrix_t *);
+bool mtrx_is_sqr(matrix_t *matrix);
 
 
 /*****************************************************************************
@@ -375,7 +375,7 @@ bool mtrx_is_sqr(matrix_t *);
  *                                                                           *
  * Returns: True if the matrix have equal dimensions, false otherwise.       *
  *****************************************************************************/
-bool mtrx_eq_dim(matrix_t *, matrix_t *);
+bool mtrx_eq_dim(matrix_t *A, matrix_t *B);
 
 
 /*****************************************************************************
@@ -388,7 +388,7 @@ bool mtrx_eq_dim(matrix_t *, matrix_t *);
  *                                                                           *
  * Returns: True if the matrix have equal dimensions, false otherwise.       *
  *****************************************************************************/
-bool mtrx_eq(matrix_t *, matrix_t *);
+bool mtrx_eq(matrix_t *A, matrix_t *B);
 
 
 /*------------------------------ Max and Min --------------------------------*/
@@ -401,7 +401,7 @@ bool mtrx_eq(matrix_t *, matrix_t *);
  *                                                                           *
  * Returns: The maximum value in the matrix.                                 *
  *****************************************************************************/
-scalar_t mtrx_max(matrix_t *);
+scalar_t mtrx_max(matrix_t *matrix);
 
 
 /*****************************************************************************
@@ -412,7 +412,7 @@ scalar_t mtrx_max(matrix_t *);
  *                                                                           *
  * Returns: The minimum value in the matrix.                                 *
  *****************************************************************************/
-scalar_t mtrx_min(matrix_t *);
+scalar_t mtrx_min(matrix_t *matrix);
 
 
 /*--------------------------- Matrix Arithmetic -----------------------------*/
@@ -426,7 +426,7 @@ scalar_t mtrx_min(matrix_t *);
  *                                                                           *
  * Returns: A new matrix that is the result of B added to A.                 *
  *****************************************************************************/
-matrix_t *mtrx_add(matrix_t *, matrix_t *);
+matrix_t *mtrx_add(matrix_t *A, matrix_t *B);
 
 
 /*****************************************************************************
@@ -438,7 +438,7 @@ matrix_t *mtrx_add(matrix_t *, matrix_t *);
  *                                                                           *
  * Returns: A new matrix which is equal to B subtracted from A.              *
  *****************************************************************************/
-matrix_t *mtrx_subtract(matrix_t *, matrix_t *);
+matrix_t *mtrx_subtract(matrix_t *A, matrix_t *B);
 
 
 /*****************************************************************************
@@ -450,7 +450,7 @@ matrix_t *mtrx_subtract(matrix_t *, matrix_t *);
  *                                                                           *
  * Returns: A new scaled matrix.                                             *
  *****************************************************************************/
-matrix_t *mtrx_scale(matrix_t *, scalar_t);
+matrix_t *mtrx_scale(matrix_t *matrix, scalar_t scalar);
 
 
 /*****************************************************************************
@@ -462,7 +462,7 @@ matrix_t *mtrx_scale(matrix_t *, scalar_t);
  *                                                                           *
  * Returns: A m x p matrix that is the result of multiplying A and B.        *
  *****************************************************************************/
-matrix_t *mtrx_mult(matrix_t *, matrix_t *);
+matrix_t *mtrx_mult(matrix_t *A, matrix_t *B);
 
 
 /*****************************************************************************
@@ -475,7 +475,7 @@ matrix_t *mtrx_mult(matrix_t *, matrix_t *);
  * Returns: A new vector that is the result of the matrix multipled by the   *
  *     vector.                                                               *
  *****************************************************************************/
-vector_t *mtrx_mult_vctr(matrix_t *, vector_t *);
+vector_t *mtrx_mult_vctr(matrix_t *matrix, vector_t *vector);
 
 
 /*------------------------- Pointwise Arithmetic ----------------------------*/
@@ -494,7 +494,7 @@ vector_t *mtrx_mult_vctr(matrix_t *, vector_t *);
  *     multplying the elements in the same positions of the original two     *
  *     matrices.                                                             *
  *****************************************************************************/
-matrix_t *mtrx_pw_mult(matrix_t *, matrix_t *);
+matrix_t *mtrx_pw_mult(matrix_t *A, matrix_t *B);
 
 
 /*****************************************************************************
@@ -512,7 +512,7 @@ matrix_t *mtrx_pw_mult(matrix_t *, matrix_t *);
  *     multplying the elements in the same positions of the original two     *
  *     matrices.                                                             *
  *****************************************************************************/
-matrix_t *mtrx_pw_div(matrix_t *, matrix_t *);
+matrix_t *mtrx_pw_div(matrix_t *A, matrix_t *B);
 
 
 /*****************************************************************************
@@ -530,7 +530,7 @@ matrix_t *mtrx_pw_div(matrix_t *, matrix_t *);
  *     multplying the elements in the same positions of the original two     *
  *     matrices.                                                             *
  *****************************************************************************/
-matrix_t *mtrx_pw_pow(matrix_t *, matrix_t *);
+matrix_t *mtrx_pw_pow(matrix_t *A, matrix_t *B);
 
 
 /*-------------------------- Matrix Manipulation ----------------------------*/
@@ -545,7 +545,7 @@ matrix_t *mtrx_pw_pow(matrix_t *, matrix_t *);
  *                                                                           *
  * Returns: void                                                             *
  *****************************************************************************/
-void mtrx_row_swap(matrix_t *, size_t, size_t);
+void mtrx_row_swap(matrix_t *matrix, size_t r1, size_t r2);
 
 
 /*****************************************************************************
@@ -558,7 +558,7 @@ void mtrx_row_swap(matrix_t *, size_t, size_t);
  *                                                                           *
  * Returns: void                                                             *
  *****************************************************************************/
-void mtrx_col_swap(matrix_t *, size_t, size_t);
+void mtrx_col_swap(matrix_t *matrix, size_t c1, size_t c2);
 
 
 /*****************************************************************************
@@ -572,7 +572,7 @@ void mtrx_col_swap(matrix_t *, size_t, size_t);
  *                                                                           *
  * Returns: void                                                             *
  *****************************************************************************/
-void mtrx_scale_row(matrix_t *, size_t, scalar_t);
+void mtrx_scale_row(matrix_t *matrix, size_t row, scalar_t scalar);
 
 
 /*****************************************************************************
@@ -586,7 +586,7 @@ void mtrx_scale_row(matrix_t *, size_t, scalar_t);
  *                                                                           *
  * Returns: void                                                             *
  *****************************************************************************/
-void mtrx_scale_col(matrix_t *, size_t, scalar_t);
+void mtrx_scale_col(matrix_t *matrix, size_t col, scalar_t scalar);
 
 
 /*----------------- Row and Column Accessors and Mutators -------------------*/
@@ -600,7 +600,7 @@ void mtrx_scale_col(matrix_t *, size_t, scalar_t);
  *                                                                           *
  * Returns: A vector containing the values of the row.                       *
  *****************************************************************************/
-vector_t *mtrx_get_row(matrix_t *, size_t);
+vector_t *mtrx_get_row(matrix_t *matrix, size_t row);
 
 
 /*****************************************************************************
@@ -612,7 +612,7 @@ vector_t *mtrx_get_row(matrix_t *, size_t);
  *                                                                           *
  * Returns: A vector containing the values of the column.                    *
  *****************************************************************************/
-vector_t *mtrx_get_col(matrix_t *, size_t);
+vector_t *mtrx_get_col(matrix_t *matrix, size_t col);
 
 
 /*****************************************************************************
@@ -626,7 +626,7 @@ vector_t *mtrx_get_col(matrix_t *, size_t);
  *                                                                           *
  * Returns: void                                                             *
  *****************************************************************************/
-void mtrx_set_row(matrix_t *, vector_t *, size_t);
+void mtrx_set_row(matrix_t *matrix, vector_t *vector, size_t row);
 
 
 /*****************************************************************************
@@ -640,7 +640,7 @@ void mtrx_set_row(matrix_t *, vector_t *, size_t);
  *                                                                           *
  * Returns: void                                                             *
  *****************************************************************************/
-void mtrx_set_col(matrix_t *, vector_t *, size_t);
+void mtrx_set_col(matrix_t *matrix, vector_t *vector, size_t col);
 
 
 /*----------------------------- Sub-matrices --------------------------------*/
@@ -657,7 +657,7 @@ void mtrx_set_col(matrix_t *, vector_t *, size_t);
  *                                                                           *
  * Returns: A new matrix representing the submatrix.                         *
  *****************************************************************************/
-matrix_t *mtrx_sub_matrix(matrix_t *, indexer_t *, indexer_t *);
+matrix_t *mtrx_sub_matrix(matrix_t *matrix, indexer_t *rows, indexer_t *cols);
 
 
 /*****************************************************************************
@@ -673,7 +673,8 @@ matrix_t *mtrx_sub_matrix(matrix_t *, indexer_t *, indexer_t *);
  *                                                                           *
  * Returns: A new matrix representing the block.                             *
  *****************************************************************************/
-matrix_t *mtrx_sub_block(matrix_t *, size_t, size_t, size_t, size_t);
+matrix_t *mtrx_sub_block(matrix_t *matrix, size_t r1, size_t r2, size_t c1,
+    size_t c2);
 
 
 /*------------------------------- Operations --------------------------------*/
@@ -687,7 +688,7 @@ matrix_t *mtrx_sub_block(matrix_t *, size_t, size_t, size_t, size_t);
  * Returns: A new matrix that is the transpose of the original matrix. If    *
  *     the original matrix was of size m x n, this new matrix will be n x m. *
  *****************************************************************************/
-matrix_t *mtrx_transpose(matrix_t *);
+matrix_t *mtrx_transpose(matrix_t *matrix);
 
 
 /*****************************************************************************
@@ -698,7 +699,7 @@ matrix_t *mtrx_transpose(matrix_t *);
  *                                                                           *
  * Returns: The value of the determinant of the matrix.                      *
  *****************************************************************************/
-scalar_t mtrx_det(matrix_t *);
+scalar_t mtrx_det(matrix_t *matrix);
 
 
 /*****************************************************************************
@@ -711,7 +712,7 @@ scalar_t mtrx_det(matrix_t *);
  * Returns: The inverse matrix. If the matrix is not square or is not        *
  *     invertible, returns NULL instead.                                     *
  *****************************************************************************/
-matrix_t *mtrx_inv(matrix_t *);
+matrix_t *mtrx_inv(matrix_t *matrix);
 
 
 /*----------------------------- System Solving ------------------------------*/
@@ -727,7 +728,7 @@ matrix_t *mtrx_inv(matrix_t *);
  * Returns: A vector representing the solution to the linear system of       *
  *     equations.                                                            *
  *****************************************************************************/
-vector_t *mtrx_solve(matrix_t *, vector_t *);
+vector_t *mtrx_solve(matrix_t *matrix, vector_t *vector);
 
 
 /*****************************************************************************
@@ -738,7 +739,7 @@ vector_t *mtrx_solve(matrix_t *, vector_t *);
  *                                                                           *
  * Returns: True if the matrix is diagonally dominant, false otherwise.      *
  *****************************************************************************/
-bool mtrx_is_diag_dom(matrix_t *);
+bool mtrx_is_diag_dom(matrix_t *matrix);
 
 
 /*****************************************************************************
@@ -752,7 +753,7 @@ bool mtrx_is_diag_dom(matrix_t *);
  * Returns: True if the matrix was successfully made diagonally dominant,    *
  *     false otherwise.                                                      *
  *****************************************************************************/
-bool mtrx_make_diag_dom(matrix_t *);
+bool mtrx_make_diag_dom(matrix_t *matrix);
 
 
 /*****************************************************************************
@@ -771,6 +772,6 @@ bool mtrx_make_diag_dom(matrix_t *);
  * Returns: A vector representing the solution to the linear system of       *
  *     equations, with each element being within the acceptable tolerance.   *
  *****************************************************************************/
-void mtrx_solve_gs(matrix_t *, vector_t *, vector_t *, scalar_t);
+void mtrx_solve_gs(matrix_t *A, vector_t *B, vector_t *X, scalar_t tolerance);
 
 #endif
