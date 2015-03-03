@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # Run the clar mixer.
-python ../../clar/generate.py .
+python ../../clar/generate.py -f .

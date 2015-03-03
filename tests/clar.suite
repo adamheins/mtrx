@@ -10,7 +10,6 @@ extern void test_mtrx_suite__mtrx_eq_dim(void);
 extern void test_mtrx_suite__mtrx_not_eq_dim(void);
 extern void test_mtrx_suite__mrtx_max(void);
 extern void test_mtrx_suite__mtrx_min(void);
-extern void test_mtrx__init_id_matrix(void);
 static const struct clar_func _clar_cb_mtrx_suite[] = {
     { "mtrx_empty", &test_mtrx_suite__mtrx_empty },
     { "mtrx_zeros", &test_mtrx_suite__mtrx_zeros },
