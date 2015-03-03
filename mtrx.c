@@ -497,7 +497,7 @@ matrix_t *mtrx_diag(vector_t *vector) {
 
 
 matrix_t *mtrx_rnd(size_t rows, size_t cols, uint32_t max) {
-	matrix_t *matrix = mtrx_zeros(rows, cols);
+	matrix_t *matrix = mtrx_empty(rows, cols);
 
 	for (size_t i = 0; i < rows; ++i) {
 		for (size_t j = 0; j < cols; ++j)
@@ -509,7 +509,7 @@ matrix_t *mtrx_rnd(size_t rows, size_t cols, uint32_t max) {
 
 
 matrix_t *mtrx_copy(matrix_t *matrix) {
-	matrix_t *copy = mtrx_zeros(matrix->rows, matrix->columns);
+	matrix_t *copy = mtrx_empty(matrix->rows, matrix->columns);
 
 	for (size_t i = 0; i < matrix->rows; ++i) {
 		for (size_t j = 0; j < matrix->columns; ++j)
@@ -570,7 +570,6 @@ bool mtrx_eq(matrix_t *A, matrix_t *B) {
 /*------------------------------ Max and Min --------------------------------*/
 
 scalar_t mtrx_max(matrix_t *matrix) {
-
 	scalar_t largest = matrix->values[0][0];
 
 	for (size_t i = 0; i < matrix->rows; ++i) {
@@ -579,13 +578,11 @@ scalar_t mtrx_max(matrix_t *matrix) {
 				largest = matrix->values[i][j];
 		}
 	}
-
 	return largest;
 }
 
 
 scalar_t mtrx_min(matrix_t *matrix) {
-
 	scalar_t smallest = matrix->values[0][0];
 
 	for (size_t i = 0; i < matrix->rows; ++i) {
@@ -594,7 +591,6 @@ scalar_t mtrx_min(matrix_t *matrix) {
 				smallest = matrix->values[i][j];
 		}
 	}
-
 	return smallest;
 }
 
