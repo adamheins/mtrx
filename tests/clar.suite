@@ -1,14 +1,37 @@
+extern void test_mtrx_suite__mtrx_empty(void);
+extern void test_mtrx_suite__mtrx_zeros(void);
+extern void test_mtrx_suite__mtrx_ones(void);
+extern void test_mtrx_suite__mtrx_id(void);
+extern void test_mtrx_suite__mtrx_diag(void);
+extern void test_mtrx_suite__mtrx_copy(void);
+extern void test_mtrx_suite__mtrx_is_sqr(void);
+extern void test_mtrx_suite__mtrx_is_not_sqr(void);
+extern void test_mtrx_suite__mtrx_eq_dim(void);
+extern void test_mtrx_suite__mtrx_not_eq_dim(void);
+extern void test_mtrx_suite__mrtx_max(void);
+extern void test_mtrx_suite__mtrx_min(void);
 extern void test_mtrx__init_id_matrix(void);
-static const struct clar_func _clar_cb_mtrx[] = {
-    { "init_id_matrix", &test_mtrx__init_id_matrix }
+static const struct clar_func _clar_cb_mtrx_suite[] = {
+    { "mtrx_empty", &test_mtrx_suite__mtrx_empty },
+    { "mtrx_zeros", &test_mtrx_suite__mtrx_zeros },
+    { "mtrx_ones", &test_mtrx_suite__mtrx_ones },
+    { "mtrx_id", &test_mtrx_suite__mtrx_id },
+    { "mtrx_diag", &test_mtrx_suite__mtrx_diag },
+    { "mtrx_copy", &test_mtrx_suite__mtrx_copy },
+    { "mtrx_is_sqr", &test_mtrx_suite__mtrx_is_sqr },
+    { "mtrx_is_not_sqr", &test_mtrx_suite__mtrx_is_not_sqr },
+    { "mtrx_eq_dim", &test_mtrx_suite__mtrx_eq_dim },
+    { "mtrx_not_eq_dim", &test_mtrx_suite__mtrx_not_eq_dim },
+    { "mrtx_max", &test_mtrx_suite__mrtx_max },
+    { "mtrx_min", &test_mtrx_suite__mtrx_min }
 };
 static struct clar_suite _clar_suites[] = {
     {
-        "mtrx",
+        "mtrx::suite",
         { NULL, NULL },
         { NULL, NULL },
-        _clar_cb_mtrx, 1, 1
+        _clar_cb_mtrx_suite, 12, 1
     }
 };
 static const size_t _clar_suite_count = 1;
-static const size_t _clar_callback_count = 1;
+static const size_t _clar_callback_count = 12;
