@@ -148,11 +148,121 @@ p62
 sg18
 Vvoid test_mtrx_suite__mtrx_min(void)
 p63
-sasS'cleanup'
-p64
-NsS'mtime'
+sa(dp64
+g14
+Vtest_mtrx_suite__mtrx_add_ones
 p65
-F1425372461.028315
-sS'initialize'
+sg16
+Vmtrx_add_ones
 p66
+sg18
+Vvoid test_mtrx_suite__mtrx_add_ones(void)
+p67
+sa(dp68
+g14
+Vtest_mtrx_suite__mtrx_add_rand
+p69
+sg16
+Vmtrx_add_rand
+p70
+sg18
+Vvoid test_mtrx_suite__mtrx_add_rand(void)
+p71
+sa(dp72
+g14
+Vtest_mtrx_suite__mtrx_add_manual
+p73
+sg16
+Vmtrx_add_manual
+p74
+sg18
+Vvoid test_mtrx_suite__mtrx_add_manual(void)
+p75
+sa(dp76
+g14
+Vtest_mtrx_suite__mtrx_add_null
+p77
+sg16
+Vmtrx_add_null
+p78
+sg18
+Vvoid test_mtrx_suite__mtrx_add_null(void)
+p79
+sa(dp80
+g14
+Vtest_mtrx_suite__mtrx_subtract_ones
+p81
+sg16
+Vmtrx_subtract_ones
+p82
+sg18
+Vvoid test_mtrx_suite__mtrx_subtract_ones(void)
+p83
+sa(dp84
+g14
+Vtest_mtrx_suite__mtrx_subtract_rand
+p85
+sg16
+Vmtrx_subtract_rand
+p86
+sg18
+Vvoid test_mtrx_suite__mtrx_subtract_rand(void)
+p87
+sa(dp88
+g14
+Vtest_mtrx_suite__mtrx_subtract_manual
+p89
+sg16
+Vmtrx_subtract_manual
+p90
+sg18
+Vvoid test_mtrx_suite__mtrx_subtract_manual(void)
+p91
+sa(dp92
+g14
+Vtest_mtrx_suite__mtrx_subtract_null
+p93
+sg16
+Vmtrx_subtract_null
+p94
+sg18
+Vvoid test_mtrx_suite__mtrx_subtract_null(void)
+p95
+sa(dp96
+g14
+Vtest_mtrx_suite__mtrx_scale_ones
+p97
+sg16
+Vmtrx_scale_ones
+p98
+sg18
+Vvoid test_mtrx_suite__mtrx_scale_ones(void)
+p99
+sa(dp100
+g14
+Vtest_mtrx_suite__mtrx_scale_zeros
+p101
+sg16
+Vmtrx_scale_zeros
+p102
+sg18
+Vvoid test_mtrx_suite__mtrx_scale_zeros(void)
+p103
+sa(dp104
+g14
+Vtest_mtrx_suite__mtrx_mult_simple
+p105
+sg16
+Vmtrx_mult_simple
+p106
+sg18
+Vvoid test_mtrx_suite__mtrx_mult_simple(void)
+p107
+sasS'cleanup'
+p108
+NsS'mtime'
+p109
+F1425459656.2399554
+sS'initialize'
+p110
 Nsbs.

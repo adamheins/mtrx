@@ -10,6 +10,17 @@ extern void test_mtrx_suite__mtrx_eq_dim(void);
 extern void test_mtrx_suite__mtrx_not_eq_dim(void);
 extern void test_mtrx_suite__mrtx_max(void);
 extern void test_mtrx_suite__mtrx_min(void);
+extern void test_mtrx_suite__mtrx_add_ones(void);
+extern void test_mtrx_suite__mtrx_add_rand(void);
+extern void test_mtrx_suite__mtrx_add_manual(void);
+extern void test_mtrx_suite__mtrx_add_null(void);
+extern void test_mtrx_suite__mtrx_subtract_ones(void);
+extern void test_mtrx_suite__mtrx_subtract_rand(void);
+extern void test_mtrx_suite__mtrx_subtract_manual(void);
+extern void test_mtrx_suite__mtrx_subtract_null(void);
+extern void test_mtrx_suite__mtrx_scale_ones(void);
+extern void test_mtrx_suite__mtrx_scale_zeros(void);
+extern void test_mtrx_suite__mtrx_mult_simple(void);
 static const struct clar_func _clar_cb_mtrx_suite[] = {
     { "mtrx_empty", &test_mtrx_suite__mtrx_empty },
     { "mtrx_zeros", &test_mtrx_suite__mtrx_zeros },
@@ -22,15 +33,26 @@ static const struct clar_func _clar_cb_mtrx_suite[] = {
     { "mtrx_eq_dim", &test_mtrx_suite__mtrx_eq_dim },
     { "mtrx_not_eq_dim", &test_mtrx_suite__mtrx_not_eq_dim },
     { "mrtx_max", &test_mtrx_suite__mrtx_max },
-    { "mtrx_min", &test_mtrx_suite__mtrx_min }
+    { "mtrx_min", &test_mtrx_suite__mtrx_min },
+    { "mtrx_add_ones", &test_mtrx_suite__mtrx_add_ones },
+    { "mtrx_add_rand", &test_mtrx_suite__mtrx_add_rand },
+    { "mtrx_add_manual", &test_mtrx_suite__mtrx_add_manual },
+    { "mtrx_add_null", &test_mtrx_suite__mtrx_add_null },
+    { "mtrx_subtract_ones", &test_mtrx_suite__mtrx_subtract_ones },
+    { "mtrx_subtract_rand", &test_mtrx_suite__mtrx_subtract_rand },
+    { "mtrx_subtract_manual", &test_mtrx_suite__mtrx_subtract_manual },
+    { "mtrx_subtract_null", &test_mtrx_suite__mtrx_subtract_null },
+    { "mtrx_scale_ones", &test_mtrx_suite__mtrx_scale_ones },
+    { "mtrx_scale_zeros", &test_mtrx_suite__mtrx_scale_zeros },
+    { "mtrx_mult_simple", &test_mtrx_suite__mtrx_mult_simple }
 };
 static struct clar_suite _clar_suites[] = {
     {
         "mtrx::suite",
         { NULL, NULL },
         { NULL, NULL },
-        _clar_cb_mtrx_suite, 12, 1
+        _clar_cb_mtrx_suite, 23, 1
     }
 };
 static const size_t _clar_suite_count = 1;
-static const size_t _clar_callback_count = 12;
+static const size_t _clar_callback_count = 23;

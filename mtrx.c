@@ -604,7 +604,7 @@ matrix_t *mtrx_add(matrix_t *A, matrix_t *B) {
 		return NULL;
 
 	// Create a new matrix to hold the result.
-	matrix_t *C = mtrx_zeros(A->rows, A->columns);
+	matrix_t *C = mtrx_empty(A->rows, A->columns);
 
 	for (size_t i = 0; i < A->rows; ++i) {
 		for (size_t j = 0; j < A->columns; j++)
@@ -622,12 +622,12 @@ matrix_t *mtrx_subtract(matrix_t *A, matrix_t *B) {
 		return NULL;
 
 	// Create a new matrix to hold the result.
-	matrix_t *C = mtrx_zeros(A->rows, A->columns);
+	matrix_t *C = mtrx_empty(A->rows, A->columns);
 
 	// Subtract each element in B from the corresponding element in A to
 	// generate the resulting element in C.
 	for (size_t i = 0; i < A->rows; ++i) {
-		for (size_t j = 0; j < A->columns; j++)
+		for (size_t j = 0; j < A->columns; ++j)
 			C->values[i][j] = A->values[i][j] - B->values[i][j];
 	}
 
@@ -636,14 +636,12 @@ matrix_t *mtrx_subtract(matrix_t *A, matrix_t *B) {
 
 
 matrix_t *mtrx_scale(matrix_t *matrix, scalar_t scalar) {
-
-	matrix_t *multiple = mtrx_zeros(matrix->rows, matrix->columns);
+	matrix_t *multiple = mtrx_empty(matrix->rows, matrix->columns);
 
 	for (size_t i = 0; i < matrix->rows; ++i) {
 		for (size_t j = 0; j < matrix->columns; ++j)
 			multiple->values[i][j] = matrix->values[i][j] * scalar;
 	}
-
 	return multiple;
 }
 
@@ -659,17 +657,15 @@ matrix_t *mtrx_mult(matrix_t *A, matrix_t *B) {
 
 
 vector_t *mtrx_mult_vctr(matrix_t *A, vector_t *B) {
-
 	if (A->columns != B->length)
 		return NULL;
 
-	vector_t *C = vctr_zeros(A->rows);
+	vector_t *C = vctr_empty(A->rows);
 
 	for (size_t i = 0; i < A->rows; ++i) {
 		for (size_t j = 0; j < A->columns; ++j)
 			C->values[i] += A->values[i][j] * B->values[j];
 	}
-
 	return C;
 }
 
