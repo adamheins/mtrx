@@ -298,4 +298,25 @@ void test_mtrx_suite__mtrx_mult_simple(void) {
   cl_assert_(B->values[2][0] == 102, "Multiplication error!");
   cl_assert_(B->values[2][1] == 126, "Multiplication error!");
   cl_assert_(B->values[2][2] == 150, "Multiplication error!");
+
+  mtrx_destroy(A);
+  mtrx_destroy(B);
+}
+
+void test_mtrx_suite__mtrx_mult_complex(void) {
+  matrix_t *A = mtrx_rnd(500, 500, 100);
+  matrix_t *B = mtrx_rnd(500, 500, 100);
+  matrix_t *C = mtrx_mult(A, B);
+
+	for (size_t i = 0; i < B->columns; ++i) {
+		for (size_t j = 0; j < A->rows; ++j) {
+      scalar_t value = 0;
+			for (size_t k = 0; k < A->columns; ++k)
+				value += A->values[j][k] * B->values[k][i];
+      cl_assert_(C->values[j][i] == value, "Multiplication error!");
+		}
+	}
+  mtrx_destroy(A);
+  mtrx_destroy(B);
+  mtrx_destroy(C);
 }

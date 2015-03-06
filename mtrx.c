@@ -144,7 +144,7 @@ matrix_t *mtrx_naive_mult(matrix_t *A, matrix_t *B) {
 matrix_t *mtrx_strassen_mult(matrix_t *A, matrix_t *B) {
 
 	// Ending condition.
-	if (A->rows <= 1 || A->columns <= 1)
+	if (A->rows <= 128 || A->columns <= 128)
 		return mtrx_naive_mult(A, B);
 
 	size_t Ahr = round(A->rows / 2.0);
