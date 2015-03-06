@@ -320,3 +320,78 @@ void test_mtrx_suite__mtrx_mult_complex(void) {
   mtrx_destroy(B);
   mtrx_destroy(C);
 }
+
+void text_mtrx_suite__mtrx_mult_vctr(void) {
+  matrix_t *matrix = mtrx_rnd(50, 50, 100);
+  vector_t *vector = vctr_rnd(50, 100);
+  vector_t *result = mtrx_mult_vctr(matrix, vector);
+
+	for (size_t i = 0; i < matrix->rows; ++i) {
+    scalar_t value = 0;
+		for (size_t j = 0; j < matrix->columns; ++j)
+			value += matrix->values[i][j] * vector->values[j];
+    cl_assert_(result->values[i] == value, "Multiplication error!");
+	}
+  mtrx_destroy(matrix);
+  vctr_destroy(vector);
+  vctr_destroy(result);
+}
+
+void test_mtrx_suite__mtrx_pw_mult(void) {
+  matrix_t *matrix = mtrx_empty(2, 2);
+  matrix->values[0][0] = 1;
+  matrix->values[0][1] = 2;
+  matrix->values[1][0] = 3;
+  matrix->values[1][1] = 4;
+
+  matrix_t *result = mtrx_pw_mult(matrix, matrix);
+  cl_assert_(result->values[0][0] == 1, "PW multiplication error!");
+  cl_assert_(result->values[0][1] == 4, "PW multiplication error!");
+  cl_assert_(result->values[1][0] == 9, "PW multiplication error!");
+  cl_assert_(result->values[1][1] == 16, "PW multiplication error!");
+
+  mtrx_destroy(matrix);
+  mtrx_destroy(result);
+}
+
+void test_mtrx_suite__mtrx_pw_div(void) {
+  matrix_t *A = mtrx_empty(2, 2);
+  A->values[0][0] = 10;
+  A->values[0][1] = 20;
+  A->values[1][0] = 30;
+  A->values[1][1] = 40;
+
+  matrix_t *B = mtrx_empty(2, 2);
+  B->values[0][0] = 5;
+  B->values[0][1] = 2;
+  B->values[1][0] = 3;
+  B->values[1][1] = 5;
+
+  matrix_t *result = mtrx_pw_div(A, B);
+  cl_assert_(result->values[0][0] == 2, "PW division error!");
+  cl_assert_(result->values[0][1] == 10, "PW division error!");
+  cl_assert_(result->values[1][0] == 10, "PW division error!");
+  cl_assert_(result->values[1][1] == 8, "PW division error!");
+
+  mtrx_destroy(A);
+  mtrx_destroy(B);
+  mtrx_destroy(result);
+}
+
+void test_mtrx_suite__mtrx_pow(void) {
+  matrix_t *matrix = mtrx_empty(2, 2);
+  matrix->values[0][0] = 1;
+  matrix->values[0][1] = 2;
+  matrix->values[1][0] = 3;
+  matrix->values[1][1] = 4;
+
+  matrix_t *result = mtrx_pw_pow(matrix, matrix);
+  cl_assert_(result->values[0][0] == 1, "PW pow error!");
+  cl_assert_(result->values[0][1] == 4, "PW pow error!");
+  cl_assert_(result->values[1][0] == 27, "PW pow error!");
+  cl_assert_(result->values[1][1] == 256, "PW pow error!");
+
+  mtrx_destroy(matrix);
+  mtrx_destroy(result);
+}
+

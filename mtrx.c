@@ -652,6 +652,7 @@ matrix_t *mtrx_scale(matrix_t *matrix, scalar_t scalar) {
 		for (size_t j = 0; j < matrix->columns; ++j)
 			multiple->values[i][j] = matrix->values[i][j] * scalar;
 	}
+
 	return multiple;
 }
 
@@ -676,6 +677,7 @@ vector_t *mtrx_mult_vctr(matrix_t *A, vector_t *B) {
 		for (size_t j = 0; j < A->columns; ++j)
 			C->values[i] += A->values[i][j] * B->values[j];
 	}
+
 	return C;
 }
 
@@ -683,12 +685,10 @@ vector_t *mtrx_mult_vctr(matrix_t *A, vector_t *B) {
 /*------------------------- Pointwise Arithmetic ----------------------------*/
 
 matrix_t *mtrx_pw_mult(matrix_t *A, matrix_t *B) {
-
-	// Check that matrices have the same dimensions.
 	if (!mtrx_eq_dim(A, B))
 		return NULL;
 
-	matrix_t *C = mtrx_zeros(A->rows, A->columns);
+	matrix_t *C = mtrx_empty(A->rows, A->columns);
 
 	for (size_t r = 0; r < A->rows; ++r) {
 		for (size_t c = 0; c < A->columns; ++c)
@@ -700,12 +700,10 @@ matrix_t *mtrx_pw_mult(matrix_t *A, matrix_t *B) {
 
 
 matrix_t *mtrx_pw_div(matrix_t *A, matrix_t *B) {
-
-	// Check that matrices have the same dimensions.
 	if (!mtrx_eq_dim(A, B))
 		return NULL;
 
-	matrix_t *C = mtrx_zeros(A->rows, A->columns);
+	matrix_t *C = mtrx_empty(A->rows, A->columns);
 
 	for (size_t r = 0; r < A->rows; ++r) {
 		for (size_t c = 0; c < A->columns; ++c)
@@ -717,12 +715,10 @@ matrix_t *mtrx_pw_div(matrix_t *A, matrix_t *B) {
 
 
 matrix_t *mtrx_pw_pow(matrix_t *A, matrix_t *B) {
-
-	// Check that matrices have the same dimensions.
 	if (!mtrx_eq_dim(A, B))
 		return NULL;
 
-	matrix_t *C = mtrx_zeros(A->rows, A->columns);
+	matrix_t *C = mtrx_empty(A->rows, A->columns);
 
 	for (size_t r = 0; r < A->rows; ++r) {
 		for (size_t c = 0; c < A->columns; ++c)
@@ -736,7 +732,6 @@ matrix_t *mtrx_pw_pow(matrix_t *A, matrix_t *B) {
 /*-------------------------- Matrix Manipulation ----------------------------*/
 
 void mtrx_row_swap(matrix_t *matrix, size_t r1, size_t r2) {
-
 	scalar_t temp;
 
 	for (size_t i = 0; i < matrix->columns; ++i) {

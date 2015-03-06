@@ -117,7 +117,7 @@ vector_t *vctr_ones(size_t length);
  *                                                                           *
  * Returns: A pointer to the created vector.                                 *
  *****************************************************************************/
-vector_t *vctr_rnd(size_t length);
+vector_t *vctr_rnd(size_t length, uint32_t max);
 
 
 /*****************************************************************************
