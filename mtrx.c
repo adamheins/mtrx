@@ -199,7 +199,7 @@ matrix_t *mtrx_strassen_mult(matrix_t *A, matrix_t *B) {
 	mtrx_destroy(M6);
 	mtrx_destroy(M7);
 
-	matrix_t *C = mtrx_zeros(A->rows, B->columns);
+	matrix_t *C = mtrx_empty(A->rows, B->columns);
 
 	for (size_t i = 0; i < C11->rows; ++i) {
 		for (size_t j = 0; j < C11->columns; ++j)
@@ -302,6 +302,16 @@ vector_t *vctr_ones(size_t length) {
 		vector->values[i] = 1;
 
 	return vector;
+}
+
+
+vector_t *vctr_rnd(size_t length, uint32_t max) {
+  vector_t *vector = vctr_empty(length);
+
+  for (size_t i = 0; i < length; ++i)
+    vector->values[i] = rand() % max;
+
+  return vector;
 }
 
 

@@ -108,6 +108,19 @@ vector_t *vctr_ones(size_t length);
 
 
 /*****************************************************************************
+ * Creates a vector of specified length containing random intergers between  *
+ * 0 and the given maximum value.                                            *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     length - The length of the vector being created.                      *
+ *     max - The maximum possible value in the vector, exclusive.            *
+ *                                                                           *
+ * Returns: A pointer to the created vector.                                 *
+ *****************************************************************************/
+vector_t *vctr_rnd(size_t length);
+
+
+/*****************************************************************************
  * Creates a new vector that is a copy of the existing one.                  *
  *                                                                           *
  * Fields:                                                                   *
