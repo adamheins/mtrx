@@ -502,3 +502,38 @@ void text_mtrx_suite__mtrx_set_col(void) {
   mtrx_destroy(matrix);
   vctr_destroy(col);
 }
+
+void test_mtrx_suite__mtrx_sub_matrix(void) {
+  matrix_t *matrix = mtrx_rnd(4, 4, 100);
+
+  indexer_t *indexer = indexer_init(2);
+  rows->values[0] = 1;
+  rows->values[1] = 3;
+
+  matrix_t *sub_matrix = mtrx_sub_matrix(matrix, indexer, indexer);
+
+  cl_assert_(sub_matrix->values[0][0] == matrix->values[1][1],
+      "Sub-matrix error!");
+  cl_assert_(sub_matrix->values[0][1] == matrix->values[1][3],
+      "Sub-matrix error!");
+  cl_assert_(sub_matrix->values[1][0] == matrix->values[3][1],
+      "Sub-matrix error!");
+  cl_assert_(sub_matrix->values[1][1] == matrix->values[3][3],
+      "Sub-matrix error!");
+
+  mtrx_destroy(matrix);
+  mtrx_destroy(sub_matrix);
+}
+
+void test_mtrx_suite__mtrx_sub_block(void) {
+  matrix_t *matrix = mtrx_rnd(10, 10, 100);
+  matrix_t *sub_block = mtrx_sub_block(matrix, 1, 4, 1, 4);
+
+  for (size_t i = 0; i < sub_block->rows; ++i) {
+    for (size_t j = 0; j < sub_block->columns; ++i)
+      cl_assert_(sub_block->values[i][j] == matrix->values[i + 1][j + 1];
+  }
+
+  mtrx_destroy(matrix);
+  mtrx_destroy(sub_block);
+}
