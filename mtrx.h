@@ -69,6 +69,25 @@ typedef struct indexer {
 
 
 /*===========================================================================*
+ *                           INDEXER FUNCTIONS                               *
+ *===========================================================================*/
+
+/*--------------------------- Initialization --------------------------------*/
+
+/*****************************************************************************
+ * Creates an indexer of specified length with uninitialized values. An      *
+ * indexer is simply a wrapper for an array of unsigned integers, which are  *
+ * used as indices for vectors and matrices.                                 *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     length - The length of the indexer being created.                     *
+ *                                                                           *
+ * Returns: A pointer to the initialized indexer.                            *
+ *****************************************************************************/
+indexer_t *indexer_init(size_t length);
+
+
+/*===========================================================================*
  *                           VECTOR FUNCTIONS                                *
  *===========================================================================*/
 

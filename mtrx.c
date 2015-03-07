@@ -789,8 +789,6 @@ vector_t *mtrx_get_col(matrix_t *matrix, size_t col) {
 
 
 void mtrx_set_row(matrix_t *matrix, vector_t *vector, size_t row) {
-
-	// Check if vector is the same length as the number of rows in the matrix.
 	if (matrix->columns != vector->length)
 		return;
 
@@ -801,8 +799,6 @@ void mtrx_set_row(matrix_t *matrix, vector_t *vector, size_t row) {
 
 
 void mtrx_set_col(matrix_t *matrix, vector_t *vector, size_t col) {
-
-	// Check if vector is the same length as the number of rows in the matrix.
 	if (matrix->rows != vector->length)
 		return;
 
@@ -815,14 +811,12 @@ void mtrx_set_col(matrix_t *matrix, vector_t *vector, size_t col) {
 /*----------------------------- Sub-matrices --------------------------------*/
 
 matrix_t *mtrx_sub_matrix(matrix_t *A, indexer_t *rows, indexer_t *columns) {
-
 	matrix_t *sub = mtrx_zeros(rows->length, columns->length);
 
-	for (uint32_t i = 0; i < rows->length; ++i) {
-		for (uint32_t j = 0; j < columns->length; ++j)
+	for (size_t i = 0; i < rows->length; ++i) {
+		for (size_t j = 0; j < columns->length; ++j)
 			sub->values[i][j] = A->values[rows->values[i]][columns->values[j]];
 	}
-
 	return sub;
 }
 
@@ -838,7 +832,6 @@ matrix_t *mtrx_sub_block(matrix_t *matrix, size_t r1, size_t r2, size_t c1,
 		for (size_t j = 0; j < num_cols; ++j)
 			child_matrix->values[i][j] = matrix->values[r1 + i][c1 + j];
 	}
-
 	return child_matrix;
 }
 
@@ -846,7 +839,6 @@ matrix_t *mtrx_sub_block(matrix_t *matrix, size_t r1, size_t r2, size_t c1,
 /*------------------------------- Operations --------------------------------*/
 
 matrix_t *mtrx_transpose(matrix_t *matrix) {
-
 	matrix_t *transpose = mtrx_zeros(matrix->columns, matrix->rows);
 
 	for (size_t i = 0; i < matrix->rows; ++i) {
