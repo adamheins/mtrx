@@ -395,3 +395,62 @@ void test_mtrx_suite__mtrx_pow(void) {
   mtrx_destroy(result);
 }
 
+void test_mtrx_suite__mtrx_row_swap(void) {
+  matrix_t *original = mtrx_rnd(10, 10, 100);
+  matrix_t *copy = mtrx_copy(original);
+
+  mtrx_row_swap(copy, 4, 5);
+
+  for (size_t i = 0; i < original->columns; ++i) {
+    cl_assert_(copy->values[4][i] == original->values[5][i],
+        "Row swap error!");
+    cl_assert_(copy->values[5][i] == original->values[4][i],
+        "Row swap error!");
+  }
+  mtrx_destroy(original);
+  mtrx_destroy(copy);
+}
+
+void test_mtrx_suite__mtrx_col_swap(void) {
+  matrix_t *original = mtrx_rnd(10, 10, 100);
+  matrix_t *copy = mtrx_copy(original);
+
+  mtrx_col_swap(copy, 4, 5);
+
+  for (size_t i = 0; i < original->rows; ++i) {
+    cl_assert_(copy->values[i][4] == original->values[i][5],
+        "Column swap error!");
+    cl_assert_(copy->values[i][5] == original->values[i][4],
+        "Column swap error!");
+  }
+  mtrx_destroy(original);
+  mtrx_destroy(copy);
+}
+
+void test_mtrx_suite__mtrx_scale_row(void) {
+  matrix_t *original = mtrx_rnd(10, 10, 100);
+  matrix_t *copy = mtrx_copy(original);
+
+  mtrx_scale_row(copy, 4, 2.0);
+
+  for (size_t i = 0; i < original->columns; ++i) {
+    cl_assert_(copy->values[4][i] == original->values[4][i] * 2.0,
+        "Row scaling error!");
+  }
+  mtrx_destroy(original);
+  mtrx_destroy(copy);
+}
+
+void test_mtrx_suite__mtrx_scale_col(void) {
+  matrix_t *original = mtrx_rnd(10, 10, 100);
+  matrix_t *copy = mtrx_copy(original);
+
+  mtrx_scale_col(copy, 4, 2.0);
+
+  for (size_t i = 0; i < original->rows; ++i) {
+    cl_assert_(copy->values[i][4] == original->values[i][4] * 2.0,
+        "Column scaling error!");
+  }
+  mtrx_destroy(original);
+  mtrx_destroy(copy);
+}
