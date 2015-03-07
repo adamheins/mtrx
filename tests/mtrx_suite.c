@@ -433,10 +433,10 @@ void test_mtrx_suite__mtrx_scale_row(void) {
 
   mtrx_scale_row(copy, 4, 2.0);
 
-  for (size_t i = 0; i < original->columns; ++i) {
+  for (size_t i = 0; i < original->columns; ++i)
     cl_assert_(copy->values[4][i] == original->values[4][i] * 2.0,
         "Row scaling error!");
-  }
+
   mtrx_destroy(original);
   mtrx_destroy(copy);
 }
@@ -447,10 +447,58 @@ void test_mtrx_suite__mtrx_scale_col(void) {
 
   mtrx_scale_col(copy, 4, 2.0);
 
-  for (size_t i = 0; i < original->rows; ++i) {
+  for (size_t i = 0; i < original->rows; ++i)
     cl_assert_(copy->values[i][4] == original->values[i][4] * 2.0,
         "Column scaling error!");
-  }
+
   mtrx_destroy(original);
   mtrx_destroy(copy);
+}
+
+void text_mtrx_suite__mtrx_get_row(void) {
+  matrix_t *matrix = mtrx_rnd(10, 10, 100);
+  vector_t *row = mtrx_get_row(matrix, 2);
+
+  for (size_t i = 0; i < row->length; ++i)
+    cl_assert_(row->values[i] == matrix->values[2][i], "get_row error!");
+
+  mtrx_destroy(matrix);
+  vctr_destroy(row);
+}
+
+void text_mtrx_suite__mtrx_get_col(void) {
+  matrix_t *matrix = mtrx_rnd(10, 10, 100);
+  vector_t *col = mtrx_get_col(matrix, 2);
+
+  for (size_t i = 0; i < col->length; ++i)
+    cl_assert_(col->values[i] == matrix->values[i][2], "get_col error!");
+
+  mtrx_destroy(matrix);
+  vctr_destroy(col);
+}
+
+void text_mtrx_suite__mtrx_set_row(void) {
+  matrix_t *matrix = mtrx_rnd(10, 10, 100);
+  vector_t *row = vctr_rnd(10, 100);
+
+  mtrx_set_row(matrix, row, 2);
+
+  for (size_t i = 0; i < row->length; ++i)
+    cl_assert_(matrix->values[2][i] == row->values[i], "set_row error!");
+
+  mtrx_destroy(matrix);
+  vctr_destroy(row);
+}
+
+void text_mtrx_suite__mtrx_set_col(void) {
+  matrix_t *matrix = mtrx_rnd(10, 10, 100);
+  vector_t *col = vctr_rnd(10, 100);
+
+  mtrx_set_col(matrix, col, 2);
+
+  for (size_t i = 0; i < col->length; ++i)
+    cl_assert_(matrix->values[i][2] == col->values[i], "set_col error!");
+
+  mtrx_destroy(matrix);
+  vctr_destroy(col);
 }
