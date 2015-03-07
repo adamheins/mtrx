@@ -749,7 +749,7 @@ void mtrx_col_swap(matrix_t *matrix, size_t c1, size_t c2) {
 	for (size_t i = 0; i < matrix->rows; ++i) {
 		temp = matrix->values[i][c1];
 		matrix->values[i][c1] = matrix->values[i][c2];
-		matrix->values[1][c2] = temp;
+		matrix->values[i][c2] = temp;
 	}
 }
 
