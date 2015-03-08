@@ -14,6 +14,9 @@
  *===========================================================================*/
 
 // Stores the results of an LU decomposition.
+// L is the lower triangular, U is the upper triangular, and P is the
+// permutation matrix. swaps is the number of row swaps that were performed
+// by pivoting.
 typedef struct {
 	matrix_t *L;
 	matrix_t *U;
@@ -236,7 +239,8 @@ vector_t *back_sub(matrix_t *A, vector_t *B) {
 
 	vector_t *X = vctr_empty(n);
 
-	for (size_t i = n - 1; i >= 0; --i) {
+  // For loop syntax adjusted to properly decrement an unsigned value.
+	for (size_t i = n; i-- > 0;) {
 		X->values[i] = B->values[i];
 		for (size_t k = i + 1; k < n; ++k)
 			X->values[i] -= A->values[i][k] * X->values[k];
@@ -252,7 +256,6 @@ vector_t *forward_sub(matrix_t *A, vector_t *B) {
 
 	vector_t *X = vctr_empty(n);
 
-	// Forward substitution.
 	for (size_t i = 0; i < n; ++i) {
 		X->values[i] = B->values[i];
 		for (size_t k = 0; k < i; ++k)
@@ -264,13 +267,27 @@ vector_t *forward_sub(matrix_t *A, vector_t *B) {
 
 
 /*===========================================================================*
+ *                           INDEXER FUNCTIONS                               *
+ *===========================================================================*/
+
+/*--------------------------- Initialization --------------------------------*/
+
+indexer_t *indexer_init(size_t length) {
+  indexer_t *indexer = (indexer_t *)malloc(sizeof(indexer_t));
+
+  indexer->values = (size_t *)malloc(length * sizeof(size_t));
+  indexer->length = length;
+
+  return indexer;
+}
+
+/*===========================================================================*
  *                           VECTOR FUNCTIONS                                *
  *===========================================================================*/
 
 /*--------------------------- Initialization --------------------------------*/
 
 vector_t *vctr_empty(size_t length) {
-
 	vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
 
 	vector->values = (scalar_t *)malloc(length * sizeof(scalar_t));
@@ -281,7 +298,6 @@ vector_t *vctr_empty(size_t length) {
 
 
 vector_t *vctr_zeros(size_t length) {
-
 	vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
 
 	vector->values = (scalar_t *)calloc(length, sizeof(scalar_t));
@@ -292,7 +308,6 @@ vector_t *vctr_zeros(size_t length) {
 
 
 vector_t *vctr_ones(size_t length) {
-
 	vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
 
 	vector->values = (scalar_t *)malloc(length * sizeof(scalar_t));
@@ -671,7 +686,7 @@ vector_t *mtrx_mult_vctr(matrix_t *A, vector_t *B) {
 	if (A->columns != B->length)
 		return NULL;
 
-	vector_t *C = vctr_empty(A->rows);
+	vector_t *C = vctr_zeros(A->rows);
 
 	for (size_t i = 0; i < A->rows; ++i) {
 		for (size_t j = 0; j < A->columns; ++j)
@@ -845,18 +860,17 @@ matrix_t *mtrx_transpose(matrix_t *matrix) {
 		for (size_t j = 0; j < matrix->columns; ++j)
 			transpose->values[j][i] = matrix->values[i][j];
 	}
-
 	return transpose;
 }
 
 
-scalar_t mtrx_det(matrix_t *A) {
+scalar_t mtrx_det(matrix_t *matrix) {
 
 	// Check that the matrix is square.
-	if (!mtrx_is_sqr(A))
+	if (!mtrx_is_sqr(matrix))
 		return 0;
 
-	lu_factors_t *lu_factors = lu_decomposition(A);
+	lu_factors_t *lu_factors = lu_decomposition(matrix);
 
 	scalar_t det = 1;
 	for (size_t i = 0; i < lu_factors->L->rows; ++i)
@@ -872,7 +886,6 @@ scalar_t mtrx_det(matrix_t *A) {
 
 
 matrix_t *mtrx_inv(matrix_t *matrix) {
-
 	if (!mtrx_is_sqr(matrix))
 		return NULL;
 
@@ -884,7 +897,7 @@ matrix_t *mtrx_inv(matrix_t *matrix) {
 	lu_factors_t *lu_factors = lu_decomposition(matrix);
 
 	// Solve the system.
-	vector_t *C = mtrx_mult_vctr(lu_factors->P, id_col);
+  vector_t *C = mtrx_mult_vctr(lu_factors->P, id_col);
 	vector_t *D = forward_sub(lu_factors->L, C);
 	vector_t *X = back_sub(lu_factors->U, D);
 	mtrx_set_col(inverse, X, 0);
@@ -908,7 +921,6 @@ matrix_t *mtrx_inv(matrix_t *matrix) {
 
 	return inverse;
 }
-
 
 /*----------------------------- System Solving ------------------------------*/
 

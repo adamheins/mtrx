@@ -507,8 +507,8 @@ void test_mtrx_suite__mtrx_sub_matrix(void) {
   matrix_t *matrix = mtrx_rnd(4, 4, 100);
 
   indexer_t *indexer = indexer_init(2);
-  rows->values[0] = 1;
-  rows->values[1] = 3;
+  indexer->values[0] = 1;
+  indexer->values[1] = 3;
 
   matrix_t *sub_matrix = mtrx_sub_matrix(matrix, indexer, indexer);
 
@@ -530,10 +530,78 @@ void test_mtrx_suite__mtrx_sub_block(void) {
   matrix_t *sub_block = mtrx_sub_block(matrix, 1, 4, 1, 4);
 
   for (size_t i = 0; i < sub_block->rows; ++i) {
-    for (size_t j = 0; j < sub_block->columns; ++i)
-      cl_assert_(sub_block->values[i][j] == matrix->values[i + 1][j + 1];
+    for (size_t j = 0; j < sub_block->columns; ++j)
+      cl_assert_(sub_block->values[i][j] == matrix->values[i + 1][j + 1],
+          "sub-block error!");
   }
 
   mtrx_destroy(matrix);
   mtrx_destroy(sub_block);
+}
+
+void test_mtrx_suite__mtrx_transpose(void) {
+  matrix_t *matrix = mtrx_rnd(10, 10, 100);
+  matrix_t *transpose = mtrx_transpose(matrix);
+
+	for (size_t i = 0; i < matrix->rows; ++i) {
+		for (size_t j = 0; j < matrix->columns; ++j)
+			cl_assert_(transpose->values[j][i] == matrix->values[i][j],
+        "Transpose error!");
+	}
+
+  mtrx_destroy(matrix);
+  mtrx_destroy(transpose);
+}
+
+void test_mtrx_suite__mtrx_det(void) {
+  matrix_t *matrix = mtrx_empty(3, 3);
+  matrix->values[0][0] = 6;
+  matrix->values[0][1] = 1;
+  matrix->values[0][2] = 1;
+
+  matrix->values[1][0] = 4;
+  matrix->values[1][1] = -2;
+  matrix->values[1][2] = 5;
+
+  matrix->values[2][0] = 2;
+  matrix->values[2][1] = 8;
+  matrix->values[2][2] = 7;
+
+  scalar_t det = mtrx_det(matrix);
+
+  // Do to the inaccuracies of floating point values, this result may not be
+  // exact. Thus the determinant is rounded to an integer here.
+  cl_assert_((int)(det - 0.5) == -306, "Determinant error!");
+
+  mtrx_destroy(matrix);
+}
+void test_mtrx_suite__mtrx_inv(void) {
+  matrix_t *matrix = mtrx_empty(3, 3);
+  matrix->values[0][0] = 1;
+  matrix->values[0][1] = 3;
+  matrix->values[0][2] = 1;
+
+  matrix->values[1][0] = 1;
+  matrix->values[1][1] = 1;
+  matrix->values[1][2] = 2;
+
+  matrix->values[2][0] = 2;
+  matrix->values[2][1] = 3;
+  matrix->values[2][2] = 4;
+
+  matrix_t *inv = mtrx_inv(matrix);
+  cl_assert_(inv->values[0][0] == 2, "Inverse error!");
+  cl_assert_(inv->values[0][1] == 9, "Inverse error!");
+  cl_assert_(inv->values[0][2] == -5, "Inverse error!");
+
+  cl_assert_(inv->values[1][0] == 0, "Inverse error!");
+  cl_assert_(inv->values[1][1] == -2, "Inverse error!");
+  cl_assert_(inv->values[1][2] == 1, "Inverse error!");
+
+  cl_assert_(inv->values[2][0] == -1, "Inverse error!");
+  cl_assert_(inv->values[2][1] == -3, "Inverse error!");
+  cl_assert_(inv->values[2][2] == 2, "Inverse error!");
+
+  mtrx_destroy(matrix);
+  mtrx_destroy(inv);
 }
