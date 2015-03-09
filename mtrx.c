@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
 
 #include "mtrx.h"
 
@@ -263,6 +264,144 @@ vector_t *forward_sub(matrix_t *A, vector_t *B) {
 		X->values[i] /= A->values[i][i];
 	}
 	return X;
+}
+
+// Convert a string to a scalar value.
+scalar_t atos(const char *str, size_t low, size_t high) {
+  scalar_t value = 0;
+  int sign = 1;
+  size_t index = low;
+
+  // Check for a negative sign.
+  if (str[0] == '-') {
+    sign = -1;
+    ++index;
+  }
+
+  while (str[index] != '.' && index < high) {
+    value = value * 10 + str[index] - '0';
+    ++index;
+  }
+
+  scalar_t fraction = 0;
+  size_t len = 0;
+
+  // Get the value of the fractional part.
+  while (++index < high) {
+    fraction = fraction * 10 + str[index] - '0';
+    ++len;
+  }
+
+  for (size_t i = 0; i < len; ++i)
+    fraction /= 10;
+
+  return value + fraction;
+}
+
+
+vector_t *vctr_from_str(const char *str) {
+
+  // Count the number of elements the array will have.
+  size_t count = 0;
+  if (str[0] != ' ')
+    ++count;
+
+  for (size_t i = 1; str[i] != '\0'; ++i) {
+    if (str[i - 1] == ' ' && str[i] != ' ')
+      ++count;
+  }
+
+  // Create the array.
+  vector_t *vector = vctr_empty(count);
+
+  // Parse each scalar value out of the array.
+  count = 0;
+  size_t start = 0;
+  size_t i = 1;
+  for (; str[i] != '\0'; ++i) {
+
+    // 'Rising edge'
+    if (str[i - 1] == ' ' && str[i] != ' ')
+      start = i;
+
+    // 'Falling edge'
+    if (str[i - 1] != ' ' && str[i] == ' ')
+      vector->values[count++] = atos(str, start, i);
+  }
+  vector->values[count] = atos(str, start, i); //TODO deal with ending in space case
+  return vector;
+}
+
+vector_t *vctr_init(const char *str) {
+  return vctr_from_str(str);
+}
+
+// Determine the number of columns in the matrix.
+size_t get_num_columns(const char *str) {
+
+  size_t count = 0;
+  if (str[0] != ' ')
+    ++count;
+
+  for (size_t i = 1; str[i] != '\0' && str[i] != ';'; ++i) {
+    if (str[i - 1] == ' ' && str[i] != ' ')
+      ++count;
+  }
+
+  return count;
+}
+
+// Parse a row from the matrix.
+scalar_t *row_from_str(const char *str, size_t cols, size_t low, size_t high) {
+  scalar_t *values = (scalar_t *)malloc(cols * sizeof(scalar_t));
+
+  // Parse each scalar value out of the array.
+  size_t count = 0;
+  size_t start = 0;
+  size_t i = low + 1;
+
+  for (; i < high; ++i) {
+    // 'Rising edge'
+    if (str[i - 1] == ' ' && str[i] != ' ')
+      start = i;
+
+    // 'Falling edge'
+    if (str[i - 1] != ' ' && str[i] == ' ')
+      values[count++] = atos(str, start, i);
+  }
+
+  values[count] = atos(str, start, i); //TODO deal with ending in space case
+  return values;
+}
+
+
+matrix_t *mtrx_init(const char *str) {
+
+  // Figure out how many rows the matrix will have.
+  size_t row_count = 1;
+  for (size_t i = 0; str[i] != '\0'; ++i) {
+    if (str[i] == ';')
+      ++row_count;
+  }
+
+  // Create the matrix.
+  matrix_t *matrix = (matrix_t *)malloc(sizeof(matrix_t));
+  matrix->rows = row_count;
+  matrix->columns = get_num_columns(str);
+  matrix->values = (scalar_t **)malloc(row_count * sizeof(scalar_t *));
+
+  size_t start = 0;
+  size_t index = 0;
+  size_t count = 0;
+  for (; str[index] != '\0'; ++index) {
+    if (str[index] == ';') {
+      matrix->values[count++] = row_from_str(str, matrix->columns, start, index);
+      start = index + 1;
+    }
+  }
+
+  matrix->values[count] = row_from_str(str, matrix->columns, start, index);
+  return matrix;
 }
 
 
@@ -1022,22 +1161,22 @@ void mtrx_solve_gs(matrix_t *A, vector_t *B, vector_t *X, double tolerance) {
 	uint32_t max_iter = 1000000;
 	uint32_t iter = 0;
 
-	int done = 0;
+	bool done = false;
 
 	while (!done && iter < max_iter) {
-		done = 1;
-		for (uint32_t i = 0; i < X->length; ++i) {
-			double prev = X->values[i];
+		done = true;
+		for (size_t i = 0; i < X->length; ++i) {
+			scalar_t prev = X->values[i];
 			X->values[i] = B->values[i];
-			for (uint32_t j = 0; j < i; ++j)
+			for (size_t j = 0; j < i; ++j)
 				X->values[i] -= A->values[i][j] * X->values[j];
-			for (uint32_t j = i + 1; j < X->length; ++j)
+			for (size_t j = i + 1; j < X->length; ++j)
 				X->values[i] -= A->values[i][j] * X->values[j];
 			X->values[i] /= A->values[i][i];
 
 			// Check if this element satisfies the tolerance requirement.
 			if (fabs(X->values[i] - prev) > tolerance)
-				done = 0;
+				done = false;
 		}
 		++iter;
 	}
