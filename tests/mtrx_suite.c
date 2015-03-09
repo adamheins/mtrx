@@ -1,8 +1,11 @@
 #include "../mtrx.h"
 #include "clar.h"
 #include <stdio.h>
+#include <math.h>
 
 
+
+/*------------------------------- Helpers -----------------------------------*/
 
 void assert_all_elements_equal(matrix_t *matrix, scalar_t value) {
   for (size_t i = 0; i < matrix->rows; ++i) {
@@ -11,8 +14,41 @@ void assert_all_elements_equal(matrix_t *matrix, scalar_t value) {
   }
 }
 
+bool mtrx_eq_within_tol(matrix_t *A, matrix_t *B, scalar_t tol) {
+  if (!mtrx_eq_dim(A, B))
+    return false;
+  for (size_t i = 0; i < A->rows; ++i) {
+    for (size_t j = 0; j < A->columns; ++j) {
+      scalar_t diff = fabs(A->values[i][j] - B->values[i][j]);
+      if (diff > tol)
+        return false;
+    }
+  }
+  return true;
+}
+
 
 /*--------------------------- Initialization --------------------------------*/
+
+void test_mtrx_suite__mtrx_init(void) {
+  matrix_t *master = mtrx_empty(2, 2);
+  master->values[0][0] = 1.5;
+  master->values[0][1] = 2;
+  master->values[1][0] = -3.2;
+  master->values[1][1] = 4.365;
+
+  // Normal case.
+  matrix_t *matrix = mtrx_init("1.5 2; -3.2 4.365");
+  cl_assert_(mtrx_eq_within_tol(master, matrix, 0.00001), "Matrices inequal!");
+  mtrx_destroy(matrix);
+
+  // Weird spacing case.
+  matrix = mtrx_init("  1.5 2  ; -3.2    4.365     ");
+  cl_assert_(mtrx_eq_within_tol(master, matrix, 0.00001), "Matrices inequal!");
+  mtrx_destroy(matrix);
+
+  mtrx_destroy(master);
+}
 
 void test_mtrx_suite__mtrx_empty(void) {
   matrix_t *matrix = mtrx_empty(5, 10);
@@ -144,6 +180,7 @@ void test_mtrx_suite__mtrx_add_ones(void) {
   mtrx_destroy(C);
 }
 
+
 void test_mtrx_suite__mtrx_add_rand(void) {
   matrix_t *A = mtrx_rnd(10, 10, 20);
   matrix_t *B = mtrx_rnd(10, 10, 20);
@@ -157,6 +194,7 @@ void test_mtrx_suite__mtrx_add_rand(void) {
   mtrx_destroy(B);
   mtrx_destroy(C);
 }
+
 
 void test_mtrx_suite__mtrx_add_manual(void) {
   matrix_t *A = mtrx_empty(3, 2);
@@ -188,6 +226,7 @@ void test_mtrx_suite__mtrx_add_manual(void) {
   mtrx_destroy(C);
 }
 
+
 void test_mtrx_suite__mtrx_add_null(void) {
   matrix_t *A = mtrx_empty(4, 2);
   matrix_t *B = mtrx_empty(2, 4);
@@ -196,6 +235,7 @@ void test_mtrx_suite__mtrx_add_null(void) {
   mtrx_destroy(A);
   mtrx_destroy(B);
 }
+
 
 void test_mtrx_suite__mtrx_subtract_ones(void) {
   matrix_t *A = mtrx_ones(10, 10);
@@ -206,6 +246,7 @@ void test_mtrx_suite__mtrx_subtract_ones(void) {
   mtrx_destroy(B);
   mtrx_destroy(C);
 }
+
 
 void test_mtrx_suite__mtrx_subtract_rand(void) {
   matrix_t *A = mtrx_rnd(10, 10, 20);
@@ -220,6 +261,7 @@ void test_mtrx_suite__mtrx_subtract_rand(void) {
   mtrx_destroy(B);
   mtrx_destroy(C);
 }
+
 
 void test_mtrx_suite__mtrx_subtract_manual(void) {
   matrix_t *A = mtrx_empty(3, 2);
@@ -251,6 +293,7 @@ void test_mtrx_suite__mtrx_subtract_manual(void) {
   mtrx_destroy(C);
 }
 
+
 void test_mtrx_suite__mtrx_subtract_null(void) {
   matrix_t *A = mtrx_empty(4, 2);
   matrix_t *B = mtrx_empty(2, 4);
@@ -260,6 +303,7 @@ void test_mtrx_suite__mtrx_subtract_null(void) {
   mtrx_destroy(B);
 }
 
+
 void test_mtrx_suite__mtrx_scale_ones(void) {
   matrix_t *A = mtrx_ones(10, 10);
   matrix_t *B = mtrx_scale(A, 100);
@@ -268,6 +312,7 @@ void test_mtrx_suite__mtrx_scale_ones(void) {
   mtrx_destroy(B);
 }
 
+
 void test_mtrx_suite__mtrx_scale_zeros(void) {
   matrix_t *A = mtrx_zeros(10, 10);
   matrix_t *B = mtrx_scale(A, 100);
@@ -275,6 +320,7 @@ void test_mtrx_suite__mtrx_scale_zeros(void) {
   mtrx_destroy(A);
   mtrx_destroy(B);
 }
+
 
 void test_mtrx_suite__mtrx_mult_simple(void) {
   matrix_t *A = mtrx_empty(3, 3);
@@ -303,6 +349,7 @@ void test_mtrx_suite__mtrx_mult_simple(void) {
   mtrx_destroy(B);
 }
 
+
 void test_mtrx_suite__mtrx_mult_complex(void) {
   matrix_t *A = mtrx_rnd(500, 500, 100);
   matrix_t *B = mtrx_rnd(500, 500, 100);
@@ -321,6 +368,7 @@ void test_mtrx_suite__mtrx_mult_complex(void) {
   mtrx_destroy(C);
 }
 
+
 void text_mtrx_suite__mtrx_mult_vctr(void) {
   matrix_t *matrix = mtrx_rnd(50, 50, 100);
   vector_t *vector = vctr_rnd(50, 100);
@@ -336,6 +384,9 @@ void text_mtrx_suite__mtrx_mult_vctr(void) {
   vctr_destroy(vector);
   vctr_destroy(result);
 }
+
+
+/*------------------------- Pointwise Arithmetic ----------------------------*/
 
 void test_mtrx_suite__mtrx_pw_mult(void) {
   matrix_t *matrix = mtrx_empty(2, 2);
@@ -353,6 +404,7 @@ void test_mtrx_suite__mtrx_pw_mult(void) {
   mtrx_destroy(matrix);
   mtrx_destroy(result);
 }
+
 
 void test_mtrx_suite__mtrx_pw_div(void) {
   matrix_t *A = mtrx_empty(2, 2);
@@ -378,6 +430,7 @@ void test_mtrx_suite__mtrx_pw_div(void) {
   mtrx_destroy(result);
 }
 
+
 void test_mtrx_suite__mtrx_pow(void) {
   matrix_t *matrix = mtrx_empty(2, 2);
   matrix->values[0][0] = 1;
@@ -395,6 +448,9 @@ void test_mtrx_suite__mtrx_pow(void) {
   mtrx_destroy(result);
 }
 
+
+/*-------------------------- Matrix Manipulation ----------------------------*/
+
 void test_mtrx_suite__mtrx_row_swap(void) {
   matrix_t *original = mtrx_rnd(10, 10, 100);
   matrix_t *copy = mtrx_copy(original);
@@ -410,6 +466,7 @@ void test_mtrx_suite__mtrx_row_swap(void) {
   mtrx_destroy(original);
   mtrx_destroy(copy);
 }
+
 
 void test_mtrx_suite__mtrx_col_swap(void) {
   matrix_t *original = mtrx_rnd(10, 10, 100);
@@ -427,6 +484,7 @@ void test_mtrx_suite__mtrx_col_swap(void) {
   mtrx_destroy(copy);
 }
 
+
 void test_mtrx_suite__mtrx_scale_row(void) {
   matrix_t *original = mtrx_rnd(10, 10, 100);
   matrix_t *copy = mtrx_copy(original);
@@ -440,6 +498,7 @@ void test_mtrx_suite__mtrx_scale_row(void) {
   mtrx_destroy(original);
   mtrx_destroy(copy);
 }
+
 
 void test_mtrx_suite__mtrx_scale_col(void) {
   matrix_t *original = mtrx_rnd(10, 10, 100);
@@ -455,6 +514,9 @@ void test_mtrx_suite__mtrx_scale_col(void) {
   mtrx_destroy(copy);
 }
 
+
+/*----------------- Row and Column Accessors and Mutators -------------------*/
+
 void text_mtrx_suite__mtrx_get_row(void) {
   matrix_t *matrix = mtrx_rnd(10, 10, 100);
   vector_t *row = mtrx_get_row(matrix, 2);
@@ -466,6 +528,7 @@ void text_mtrx_suite__mtrx_get_row(void) {
   vctr_destroy(row);
 }
 
+
 void text_mtrx_suite__mtrx_get_col(void) {
   matrix_t *matrix = mtrx_rnd(10, 10, 100);
   vector_t *col = mtrx_get_col(matrix, 2);
@@ -476,6 +539,7 @@ void text_mtrx_suite__mtrx_get_col(void) {
   mtrx_destroy(matrix);
   vctr_destroy(col);
 }
+
 
 void text_mtrx_suite__mtrx_set_row(void) {
   matrix_t *matrix = mtrx_rnd(10, 10, 100);
@@ -490,6 +554,7 @@ void text_mtrx_suite__mtrx_set_row(void) {
   vctr_destroy(row);
 }
 
+
 void text_mtrx_suite__mtrx_set_col(void) {
   matrix_t *matrix = mtrx_rnd(10, 10, 100);
   vector_t *col = vctr_rnd(10, 100);
@@ -502,6 +567,9 @@ void text_mtrx_suite__mtrx_set_col(void) {
   mtrx_destroy(matrix);
   vctr_destroy(col);
 }
+
+
+/*----------------------------- Sub-matrices --------------------------------*/
 
 void test_mtrx_suite__mtrx_sub_matrix(void) {
   matrix_t *matrix = mtrx_rnd(4, 4, 100);
@@ -525,6 +593,7 @@ void test_mtrx_suite__mtrx_sub_matrix(void) {
   mtrx_destroy(sub_matrix);
 }
 
+
 void test_mtrx_suite__mtrx_sub_block(void) {
   matrix_t *matrix = mtrx_rnd(10, 10, 100);
   matrix_t *sub_block = mtrx_sub_block(matrix, 1, 4, 1, 4);
@@ -539,6 +608,9 @@ void test_mtrx_suite__mtrx_sub_block(void) {
   mtrx_destroy(sub_block);
 }
 
+
+/*------------------------------- Operations --------------------------------*/
+
 void test_mtrx_suite__mtrx_transpose(void) {
   matrix_t *matrix = mtrx_rnd(10, 10, 100);
   matrix_t *transpose = mtrx_transpose(matrix);
@@ -552,6 +624,7 @@ void test_mtrx_suite__mtrx_transpose(void) {
   mtrx_destroy(matrix);
   mtrx_destroy(transpose);
 }
+
 
 void test_mtrx_suite__mtrx_det(void) {
   matrix_t *matrix = mtrx_empty(3, 3);
@@ -571,10 +644,12 @@ void test_mtrx_suite__mtrx_det(void) {
 
   // Do to the inaccuracies of floating point values, this result may not be
   // exact. Thus the determinant is rounded to an integer here.
-  cl_assert_((int)(det - 0.5) == -306, "Determinant error!");
+  cl_assert_(round(det) == -306, "Determinant error!");
 
   mtrx_destroy(matrix);
 }
+
+
 void test_mtrx_suite__mtrx_inv(void) {
   matrix_t *matrix = mtrx_empty(3, 3);
   matrix->values[0][0] = 1;
@@ -604,4 +679,66 @@ void test_mtrx_suite__mtrx_inv(void) {
 
   mtrx_destroy(matrix);
   mtrx_destroy(inv);
+}
+
+
+/*----------------------------- System Solving ------------------------------*/
+
+void test_mtrx_suite__mtrx_solve(void) {
+  matrix_t *matrix = mtrx_rnd(10, 10, 100);
+  vector_t *vector = vctr_rnd(10, 100);
+
+  vector_t *sol = mtrx_solve(matrix, vector);
+  vector_t *compare = mtrx_mult_vctr(matrix, sol);
+
+  for (size_t i = 0; i < vector->length; ++i)
+    cl_assert_(round(compare->values[i]) == round(vector->values[i]),
+        "System solved incorrectly!");
+
+  mtrx_destroy(matrix);
+  vctr_destroy(vector);
+  vctr_destroy(sol);
+  vctr_destroy(compare);
+}
+
+
+void test_mtrx_suite__mtrx_is_diag_dom(void) {
+  matrix_t *matrix = mtrx_init("3 -2 1; 1 -3 2; -1 2 4");
+  cl_assert_(mtrx_is_diag_dom(matrix), "Matrix should be diag dom.");
+  mtrx_destroy(matrix);
+
+  matrix = mtrx_init("-2 2 1; 1 3 2; 1 -2 0");
+  cl_assert_(!mtrx_is_diag_dom(matrix), "Matrix should not be diag dom.");
+  mtrx_destroy(matrix);
+}
+
+
+void test_mtrx_suite__mtrx_make_diag_dom(void) {
+  matrix_t *matrix = mtrx_init("1 -3 2; 3 -2 1; -1 2 4");
+  cl_assert_(!mtrx_is_diag_dom(matrix), "Matrix should not be diag dom.");
+  matrix_t *diag_dom_matrix = mtrx_make_diag_dom(matrix);
+  cl_assert_(mtrx_is_diag_dom(diag_dom_matrix), "Matrix should be diag dom.");
+  mtrx_destroy(matrix);
+  mtrx_destroy(diag_dom_matrix);
+}
+
+
+void test_mtrx_suite__mtrx_solve_gs(void) {
+  matrix_t *A = mtrx_init("4 -1 -1; -2 6 1; -1 1 7");
+  vector_t *B = vctr_init("3 6 -9");
+  vector_t *X = vctr_zeros(3);
+
+  mtrx_solve_gs(A, B, X, 0.000001);
+
+  vector_t *compare = mtrx_mult_vctr(A, X);
+
+  for (size_t i = 0; i < compare->length; ++i) {
+    cl_assert_(round(compare->values[i]) == round(B->values[i]),
+        "GS method error.");
+  }
+
+  mtrx_destroy(A);
+  vctr_destroy(B);
+  vctr_destroy(X);
+  vctr_destroy(compare);
 }
