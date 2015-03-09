@@ -94,6 +94,16 @@ indexer_t *indexer_init(size_t length);
 /*--------------------------- Initialization --------------------------------*/
 
 /*****************************************************************************
+ * Creates a vector from the string of values.                               *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     str - The string to use to create the vector.                         *
+ *                                                                           *
+ * Returns: A pointer to the new vector.                                     *
+ *****************************************************************************/
+vector_t *vctr_init(const char *str);
+
+/*****************************************************************************
  * Creates a vector of specified length with uninitialized values.           *
  *                                                                           *
  * Fields:                                                                   *
@@ -272,6 +282,17 @@ scalar_t vctr_mag(vector_t *vector);
  *===========================================================================*/
 
 /*--------------------------- Initialization --------------------------------*/
+
+/*****************************************************************************
+ * Creates a matrix from a string. Values are delimited by spaces and rows   *
+ * are delimited by semicolons.                                              *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     str - The string from which to create the matrix.                     *
+ *                                                                           *
+ * Returns: A pointer to the new matrix.                                     *
+ *****************************************************************************/
+matrix_t *mtrx_init(const char* str);
 
 /*****************************************************************************
  * Creates a matrix with the specified number of rows and columns.           *
@@ -782,10 +803,10 @@ bool mtrx_is_diag_dom(matrix_t *matrix);
  * Fields:                                                                   *
  *     matrix - The matrix to make diagonally dominant.                      *
  *                                                                           *
- * Returns: True if the matrix was successfully made diagonally dominant,    *
- *     false otherwise.                                                      *
+ * Returns: A new matrix that is a diagonally dominant version of the        *
+ *          original.                                                        *
  *****************************************************************************/
-bool mtrx_make_diag_dom(matrix_t *matrix);
+matrix_t *mtrx_make_diag_dom(matrix_t *matrix);
 
 
 /*****************************************************************************

@@ -273,7 +273,7 @@ scalar_t atos(const char *str, size_t low, size_t high) {
   size_t index = low;
 
   // Check for a negative sign.
-  if (str[0] == '-') {
+  if (str[low] == '-') {
     sign = -1;
     ++index;
   }
@@ -295,7 +295,7 @@ scalar_t atos(const char *str, size_t low, size_t high) {
   for (size_t i = 0; i < len; ++i)
     fraction /= 10;
 
-  return value + fraction;
+  return sign * (value + fraction);
 }
 
 
@@ -1108,15 +1108,18 @@ bool mtrx_is_diag_dom(matrix_t *matrix) {
 }
 
 
-bool mtrx_make_diag_dom(matrix_t *matrix) {
+matrix_t *mtrx_make_diag_dom(matrix_t *matrix) {
 	if (!mtrx_is_sqr(matrix))
 		return false;
 
-	size_t *mark = (size_t *)malloc(matrix->rows * sizeof(size_t));
+	int32_t *mark = (int32_t *)malloc(matrix->rows * sizeof(int32_t));
+  for (size_t i = 0; i < matrix->rows; ++i)
+    mark[i] = -1;
 
 	for (size_t i = 0; i < matrix->rows; ++i) {
 		size_t largest_col = 0;
 		scalar_t sum = 0;
+
 
 		for (size_t j = 1; j < matrix->columns; ++j) {
 			if (fabs(matrix->values[i][j]) > fabs(matrix->values[i][largest_col]))
@@ -1132,28 +1135,28 @@ bool mtrx_make_diag_dom(matrix_t *matrix) {
     // matrix cannot be rearranged into a diagonally dominant form.
 		if (fabs(matrix->values[i][largest_col]) < sum) {
       free(mark);
-			return false;
+			return NULL;
     }
 
 		// Another row already has its largest value in this column, so the
 		// matrix cannot be made diagonally dominant.
 		if (mark[largest_col] != -1) {
       free(mark);
-			return false;
+			return NULL;
     }
 		mark[largest_col] = i;
 	}
 
-	// Make the matrix diagonally dominant by swapping rows.
-	for (size_t i = 0; i < matrix->rows; ++i) {
-		if (mark[i] != i)
-			mtrx_row_swap(matrix, i, mark[i]);
-	}
+  // Create a the rearranged diagonally dominant matrix.
+  matrix_t *diag_dom_matrix = mtrx_empty(matrix->rows, matrix->columns);
+  for (size_t i = 0; i < matrix->rows; ++i) {
+    for (size_t j = 0; j < matrix->columns; ++j)
+      diag_dom_matrix->values[i][j] = matrix->values[mark[i]][j];
+  }
 
   free(mark);
 
-	// Matrix was successfully made diagonally dominant.
-	return true;
+	return diag_dom_matrix;
 }
 
 
