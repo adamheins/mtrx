@@ -266,6 +266,7 @@ vector_t *forward_sub(matrix_t *A, vector_t *B) {
 	return X;
 }
 
+
 // Convert a string to a scalar value.
 scalar_t atos(const char *str, size_t low, size_t high) {
   scalar_t value = 0;
@@ -299,7 +300,68 @@ scalar_t atos(const char *str, size_t low, size_t high) {
 }
 
 
-vector_t *vctr_from_str(const char *str) {
+// Determine the number of columns in the matrix.
+size_t get_num_columns(const char *str) {
+
+  size_t count = 0;
+  if (str[0] != ' ')
+    ++count;
+
+  for (size_t i = 1; str[i] != '\0' && str[i] != ';'; ++i) {
+    if (str[i - 1] == ' ' && str[i] != ' ')
+      ++count;
+  }
+
+  return count;
+}
+
+
+// Parse a row from the matrix.
+scalar_t *row_from_str(const char *str, size_t cols, size_t low, size_t high) {
+  scalar_t *values = (scalar_t *)malloc(cols * sizeof(scalar_t));
+
+  // Parse each scalar value out of the array.
+  size_t count = 0;
+  size_t start = 0;
+  size_t i = low + 1;
+
+  for (; i < high; ++i) {
+    // 'Rising edge'
+    if (str[i - 1] == ' ' && str[i] != ' ')
+      start = i;
+
+    // 'Falling edge'
+    if (str[i - 1] != ' ' && str[i] == ' ')
+      values[count++] = atos(str, start, i);
+  }
+
+  values[count] = atos(str, start, i);
+  return values;
+}
+
+
+/*===========================================================================*
+ *                           INDEXER FUNCTIONS                               *
+ *===========================================================================*/
+
+/*--------------------------- Initialization --------------------------------*/
+
+indexer_t *indexer_init(size_t length) {
+  indexer_t *indexer = (indexer_t *)malloc(sizeof(indexer_t));
+
+  indexer->values = (size_t *)malloc(length * sizeof(size_t));
+  indexer->length = length;
+
+  return indexer;
+}
+
+/*===========================================================================*
+ *                           VECTOR FUNCTIONS                                *
+ *===========================================================================*/
+
+/*--------------------------- Initialization --------------------------------*/
+
+vector_t *vctr_init(const char *str) {
 
   // Count the number of elements the array will have.
   size_t count = 0;
@@ -328,103 +390,11 @@ vector_t *vctr_from_str(const char *str) {
     if (str[i - 1] != ' ' && str[i] == ' ')
       vector->values[count++] = atos(str, start, i);
   }
-  vector->values[count] = atos(str, start, i); //TODO deal with ending in space case
+  if (count < vector->length)
+    vector->values[count] = atos(str, start, i);
   return vector;
 }
 
-vector_t *vctr_init(const char *str) {
-  return vctr_from_str(str);
-}
-
-// Determine the number of columns in the matrix.
-size_t get_num_columns(const char *str) {
-
-  size_t count = 0;
-  if (str[0] != ' ')
-    ++count;
-
-  for (size_t i = 1; str[i] != '\0' && str[i] != ';'; ++i) {
-    if (str[i - 1] == ' ' && str[i] != ' ')
-      ++count;
-  }
-
-  return count;
-}
-
-// Parse a row from the matrix.
-scalar_t *row_from_str(const char *str, size_t cols, size_t low, size_t high) {
-  scalar_t *values = (scalar_t *)malloc(cols * sizeof(scalar_t));
-
-  // Parse each scalar value out of the array.
-  size_t count = 0;
-  size_t start = 0;
-  size_t i = low + 1;
-
-  for (; i < high; ++i) {
-    // 'Rising edge'
-    if (str[i - 1] == ' ' && str[i] != ' ')
-      start = i;
-
-    // 'Falling edge'
-    if (str[i - 1] != ' ' && str[i] == ' ')
-      values[count++] = atos(str, start, i);
-  }
-
-  values[count] = atos(str, start, i); //TODO deal with ending in space case
-  return values;
-}
-
-
-matrix_t *mtrx_init(const char *str) {
-
-  // Figure out how many rows the matrix will have.
-  size_t row_count = 1;
-  for (size_t i = 0; str[i] != '\0'; ++i) {
-    if (str[i] == ';')
-      ++row_count;
-  }
-
-  // Create the matrix.
-  matrix_t *matrix = (matrix_t *)malloc(sizeof(matrix_t));
-  matrix->rows = row_count;
-  matrix->columns = get_num_columns(str);
-  matrix->values = (scalar_t **)malloc(row_count * sizeof(scalar_t *));
-
-  size_t start = 0;
-  size_t index = 0;
-  size_t count = 0;
-  for (; str[index] != '\0'; ++index) {
-    if (str[index] == ';') {
-      matrix->values[count++] = row_from_str(str, matrix->columns, start, index);
-      start = index + 1;
-    }
-  }
-
-  matrix->values[count] = row_from_str(str, matrix->columns, start, index);
-  return matrix;
-}
-
-
-/*===========================================================================*
- *                           INDEXER FUNCTIONS                               *
- *===========================================================================*/
-
-/*--------------------------- Initialization --------------------------------*/
-
-indexer_t *indexer_init(size_t length) {
-  indexer_t *indexer = (indexer_t *)malloc(sizeof(indexer_t));
-
-  indexer->values = (size_t *)malloc(length * sizeof(size_t));
-  indexer->length = length;
-
-  return indexer;
-}
-
-/*===========================================================================*
- *                           VECTOR FUNCTIONS                                *
- *===========================================================================*/
-
-/*--------------------------- Initialization --------------------------------*/
 
 vector_t *vctr_empty(size_t length) {
 	vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
@@ -582,6 +552,36 @@ scalar_t vctr_mag(vector_t *vector) {
  *===========================================================================*/
 
 /*--------------------------- Initialization --------------------------------*/
+
+matrix_t *mtrx_init(const char *str) {
+
+  // Figure out how many rows the matrix will have.
+  size_t row_count = 1;
+  for (size_t i = 0; str[i] != '\0'; ++i) {
+    if (str[i] == ';')
+      ++row_count;
+  }
+
+  // Create the matrix.
+  matrix_t *matrix = (matrix_t *)malloc(sizeof(matrix_t));
+  matrix->rows = row_count;
+  matrix->columns = get_num_columns(str);
+  matrix->values = (scalar_t **)malloc(row_count * sizeof(scalar_t *));
+
+  size_t start = 0;
+  size_t index = 0;
+  size_t count = 0;
+  for (; str[index] != '\0'; ++index) {
+    if (str[index] == ';') {
+      matrix->values[count++] = row_from_str(str, matrix->columns, start, index);
+      start = index + 1;
+    }
+  }
+
+  matrix->values[count] = row_from_str(str, matrix->columns, start, index);
+  return matrix;
+}
+
 
 matrix_t *mtrx_empty(size_t rows, size_t cols) {
 	matrix_t *matrix = (matrix_t *)malloc(sizeof(matrix_t));
