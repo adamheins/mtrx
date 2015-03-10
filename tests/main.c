@@ -6,6 +6,7 @@
  */
 
 #include "clar_test.h"
+#include <time.h>
 
 /*
  * Minimal main() for clar tests.
@@ -22,6 +23,7 @@ int __cdecl main(int argc, char *argv[])
 int main(int argc, char *argv[])
 #endif
 {
+  srand(time(NULL));
 	/* Run the test suite */
 	return clar_test(argc, argv);
 }

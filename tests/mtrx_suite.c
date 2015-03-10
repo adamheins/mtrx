@@ -4,7 +4,6 @@
 #include <math.h>
 
 
-
 /*------------------------------- Helpers -----------------------------------*/
 
 void assert_all_elements_equal(matrix_t *matrix, scalar_t value) {
@@ -13,6 +12,7 @@ void assert_all_elements_equal(matrix_t *matrix, scalar_t value) {
       cl_assert_(matrix->values[i][j] == value, "Value error!");
   }
 }
+
 
 bool mtrx_eq_within_tol(matrix_t *A, matrix_t *B, scalar_t tol) {
   if (!mtrx_eq_dim(A, B))
@@ -50,12 +50,14 @@ void test_mtrx_suite__mtrx_init(void) {
   mtrx_destroy(master);
 }
 
+
 void test_mtrx_suite__mtrx_empty(void) {
   matrix_t *matrix = mtrx_empty(5, 10);
   cl_assert_(matrix->rows == 5, "Rows not assigned properly!");
   cl_assert_(matrix->columns == 10, "Columns not assigned properly.");
   mtrx_destroy(matrix);
 }
+
 
 void test_mtrx_suite__mtrx_zeros(void) {
   matrix_t *matrix = mtrx_zeros(5, 5);
@@ -96,7 +98,6 @@ void test_mtrx_suite__mtrx_diag(void) {
 
   vctr_destroy(vector);
   mtrx_destroy(matrix);
-
 }
 
 
@@ -145,6 +146,17 @@ void test_mtrx_suite__mtrx_not_eq_dim(void) {
   matrix_t *A = mtrx_empty(6, 10);
   matrix_t *B = mtrx_empty(10, 6);
   cl_assert_(!mtrx_eq_dim(A, B), "Matrices should not have equal dimensions.");
+  mtrx_destroy(A);
+  mtrx_destroy(B);
+}
+
+
+void test_mtrx_suite__mtrx_eq(void) {
+  matrix_t *A = mtrx_rnd(10, 10, 10);
+  matrix_t *B = mtrx_copy(A);
+
+  cl_assert_(mtrx_eq_within_tol(A, B, 0), "Matrices should be equal.");
+
   mtrx_destroy(A);
   mtrx_destroy(B);
 }
