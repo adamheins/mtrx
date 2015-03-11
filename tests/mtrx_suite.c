@@ -1,3 +1,10 @@
+/*****************************************************************************
+ * Copyright (c) 2015 Adam Heins                                             *
+ *                                                                           *
+ * This file is part of the mtrx project, which is distributed under the MIT *
+ * license. For the full terms, see the included LICENSE file.               *
+ *****************************************************************************/
+
 #include <stdio.h>
 #include <math.h>
 
