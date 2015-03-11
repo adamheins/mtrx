@@ -172,15 +172,14 @@ matrix_t *mtrx_strassen_mult(matrix_t *A, matrix_t *B) {
 	matrix_t *B22 = mtrx_padded_split(B, Bhr, B->rows, Bhc, B->columns, Bhr, Bhc);
 
 	// Calculate M matrices. This is the recursive section of the algorithm.
-	matrix_t *M1 = mtrx_strassen_mult(mtrx_add(A11, A22), mtrx_add(B11, B22));
-	matrix_t *M2 = mtrx_strassen_mult(mtrx_add(A21, A22), B11);
-	matrix_t *M3 = mtrx_strassen_mult(A11, mtrx_subtract(B12, B22));
-	matrix_t *M4 = mtrx_strassen_mult(A22, mtrx_subtract(B21, B11));
-	matrix_t *M5 = mtrx_strassen_mult(mtrx_add(A11, A12), B22);
-	matrix_t *M6 = mtrx_strassen_mult(mtrx_subtract(A21, A11),
-      mtrx_add(B11, B12));
-	matrix_t *M7 = mtrx_strassen_mult(mtrx_subtract(A12, A22),
-      mtrx_add(B21, B22));
+  matrix_t *M[7];
+	M[0] = mtrx_strassen_mult(mtrx_add(A11, A22), mtrx_add(B11, B22));
+	M[1] = mtrx_strassen_mult(mtrx_add(A21, A22), B11);
+	M[2] = mtrx_strassen_mult(A11, mtrx_subtract(B12, B22));
+	M[3] = mtrx_strassen_mult(A22, mtrx_subtract(B21, B11));
+	M[4] = mtrx_strassen_mult(mtrx_add(A11, A12), B22);
+	M[5] = mtrx_strassen_mult(mtrx_subtract(A21, A11), mtrx_add(B11, B12));
+	M[6] = mtrx_strassen_mult(mtrx_subtract(A12, A22), mtrx_add(B21, B22));
 
 	mtrx_destroy(A11);
 	mtrx_destroy(A12);
@@ -193,18 +192,13 @@ matrix_t *mtrx_strassen_mult(matrix_t *A, matrix_t *B) {
 	mtrx_destroy(B22);
 
 	// Calculate each quadrant of C from M matrices.
-	matrix_t *C11 = mtrx_add(mtrx_subtract(mtrx_add(M1, M4), M5), M7);
-	matrix_t *C12 = mtrx_add(M3, M5);
-	matrix_t *C21 = mtrx_add(M2, M4);
-	matrix_t *C22 = mtrx_add(mtrx_add(mtrx_subtract(M1, M2), M3), M6);
+	matrix_t *C11 = mtrx_add(mtrx_subtract(mtrx_add(M[0], M[3]), M[4]), M[6]);
+	matrix_t *C12 = mtrx_add(M[2], M[4]);
+	matrix_t *C21 = mtrx_add(M[1], M[3]);
+	matrix_t *C22 = mtrx_add(mtrx_add(mtrx_subtract(M[0], M[1]), M[2]), M[5]);
 
-	mtrx_destroy(M1);
-	mtrx_destroy(M2);
-	mtrx_destroy(M3);
-	mtrx_destroy(M4);
-	mtrx_destroy(M5);
-	mtrx_destroy(M6);
-	mtrx_destroy(M7);
+  for (uint8_t i = 0; i < 7; ++i)
+    mtrx_destroy(M[i]);
 
 	matrix_t *C = mtrx_empty(A->rows, B->columns);
 
