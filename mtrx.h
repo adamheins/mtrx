@@ -21,13 +21,13 @@
  * Fields:                                                                   *
  *     values  - The 2D array of double precision values stored in the       *
  *               matrix.                                                     *
- *	   rows    - The number of rows this matrix has.                         *
+ *     rows    - The number of rows this matrix has.                         *
  *     columns - The number of columns this matrix has.                      *
  *****************************************************************************/
 typedef struct matrix {
-	scalar_t **values;
-	size_t rows;
-	size_t columns;
+  scalar_t **values;
+  size_t rows;
+  size_t columns;
 } matrix_t;
 
 
@@ -40,8 +40,8 @@ typedef struct matrix {
  *     length - The length of the indexer.                                   *
  *****************************************************************************/
 typedef struct indexer {
-	size_t *values;
-	size_t length;
+  size_t *values;
+  size_t length;
 } indexer_t;
 
 

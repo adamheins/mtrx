@@ -369,14 +369,14 @@ void test_mtrx_suite__mtrx_mult_complex(void) {
   matrix_t *B = mtrx_rnd(500, 500, 100);
   matrix_t *C = mtrx_mult(A, B);
 
-	for (size_t i = 0; i < B->columns; ++i) {
-		for (size_t j = 0; j < A->rows; ++j) {
+  for (size_t i = 0; i < B->columns; ++i) {
+    for (size_t j = 0; j < A->rows; ++j) {
       scalar_t value = 0;
-			for (size_t k = 0; k < A->columns; ++k)
-				value += A->values[j][k] * B->values[k][i];
+      for (size_t k = 0; k < A->columns; ++k)
+        value += A->values[j][k] * B->values[k][i];
       cl_assert_(C->values[j][i] == value, "Multiplication error!");
-		}
-	}
+    }
+  }
   mtrx_destroy(A);
   mtrx_destroy(B);
   mtrx_destroy(C);
@@ -388,12 +388,12 @@ void text_mtrx_suite__mtrx_mult_vctr(void) {
   vector_t *vector = vctr_rnd(50, 100);
   vector_t *result = mtrx_mult_vctr(matrix, vector);
 
-	for (size_t i = 0; i < matrix->rows; ++i) {
+  for (size_t i = 0; i < matrix->rows; ++i) {
     scalar_t value = 0;
-		for (size_t j = 0; j < matrix->columns; ++j)
-			value += matrix->values[i][j] * vector->values[j];
+    for (size_t j = 0; j < matrix->columns; ++j)
+      value += matrix->values[i][j] * vector->values[j];
     cl_assert_(result->values[i] == value, "Multiplication error!");
-	}
+  }
   mtrx_destroy(matrix);
   vctr_destroy(vector);
   vctr_destroy(result);
@@ -629,11 +629,11 @@ void test_mtrx_suite__mtrx_transpose(void) {
   matrix_t *matrix = mtrx_rnd(10, 10, 100);
   matrix_t *transpose = mtrx_transpose(matrix);
 
-	for (size_t i = 0; i < matrix->rows; ++i) {
-		for (size_t j = 0; j < matrix->columns; ++j)
-			cl_assert_(transpose->values[j][i] == matrix->values[i][j],
+  for (size_t i = 0; i < matrix->rows; ++i) {
+    for (size_t j = 0; j < matrix->columns; ++j)
+      cl_assert_(transpose->values[j][i] == matrix->values[i][j],
         "Transpose error!");
-	}
+  }
 
   mtrx_destroy(matrix);
   mtrx_destroy(transpose);

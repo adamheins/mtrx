@@ -28,241 +28,571 @@ p11
 (dp13
 S'symbol'
 p14
-Vtest_mtrx_suite__mtrx_empty
+Vtest_mtrx_suite__mtrx_init
 p15
 sS'short_name'
 p16
-Vmtrx_empty
+Vmtrx_init
 p17
 sS'declaration'
 p18
-Vvoid test_mtrx_suite__mtrx_empty(void)
+Vvoid test_mtrx_suite__mtrx_init(void)
 p19
 sa(dp20
 g14
-Vtest_mtrx_suite__mtrx_zeros
+Vtest_mtrx_suite__mtrx_empty
 p21
 sg16
-Vmtrx_zeros
+Vmtrx_empty
 p22
 sg18
-Vvoid test_mtrx_suite__mtrx_zeros(void)
+Vvoid test_mtrx_suite__mtrx_empty(void)
 p23
 sa(dp24
 g14
-Vtest_mtrx_suite__mtrx_ones
+Vtest_mtrx_suite__mtrx_zeros
 p25
 sg16
-Vmtrx_ones
+Vmtrx_zeros
 p26
 sg18
-Vvoid test_mtrx_suite__mtrx_ones(void)
+Vvoid test_mtrx_suite__mtrx_zeros(void)
 p27
 sa(dp28
 g14
-Vtest_mtrx_suite__mtrx_id
+Vtest_mtrx_suite__mtrx_ones
 p29
 sg16
-Vmtrx_id
+Vmtrx_ones
 p30
 sg18
-Vvoid test_mtrx_suite__mtrx_id(void)
+Vvoid test_mtrx_suite__mtrx_ones(void)
 p31
 sa(dp32
 g14
-Vtest_mtrx_suite__mtrx_diag
+Vtest_mtrx_suite__mtrx_id
 p33
 sg16
-Vmtrx_diag
+Vmtrx_id
 p34
 sg18
-Vvoid test_mtrx_suite__mtrx_diag(void)
+Vvoid test_mtrx_suite__mtrx_id(void)
 p35
 sa(dp36
 g14
-Vtest_mtrx_suite__mtrx_copy
+Vtest_mtrx_suite__mtrx_diag
 p37
 sg16
-Vmtrx_copy
+Vmtrx_diag
 p38
 sg18
-Vvoid test_mtrx_suite__mtrx_copy(void)
+Vvoid test_mtrx_suite__mtrx_diag(void)
 p39
 sa(dp40
 g14
-Vtest_mtrx_suite__mtrx_is_sqr
+Vtest_mtrx_suite__mtrx_copy
 p41
 sg16
-Vmtrx_is_sqr
+Vmtrx_copy
 p42
 sg18
-Vvoid test_mtrx_suite__mtrx_is_sqr(void)
+Vvoid test_mtrx_suite__mtrx_copy(void)
 p43
 sa(dp44
 g14
-Vtest_mtrx_suite__mtrx_is_not_sqr
+Vtest_mtrx_suite__mtrx_is_sqr
 p45
 sg16
-Vmtrx_is_not_sqr
+Vmtrx_is_sqr
 p46
 sg18
-Vvoid test_mtrx_suite__mtrx_is_not_sqr(void)
+Vvoid test_mtrx_suite__mtrx_is_sqr(void)
 p47
 sa(dp48
 g14
-Vtest_mtrx_suite__mtrx_eq_dim
+Vtest_mtrx_suite__mtrx_is_not_sqr
 p49
 sg16
-Vmtrx_eq_dim
+Vmtrx_is_not_sqr
 p50
 sg18
-Vvoid test_mtrx_suite__mtrx_eq_dim(void)
+Vvoid test_mtrx_suite__mtrx_is_not_sqr(void)
 p51
 sa(dp52
 g14
-Vtest_mtrx_suite__mtrx_not_eq_dim
+Vtest_mtrx_suite__mtrx_eq_dim
 p53
 sg16
-Vmtrx_not_eq_dim
+Vmtrx_eq_dim
 p54
 sg18
-Vvoid test_mtrx_suite__mtrx_not_eq_dim(void)
+Vvoid test_mtrx_suite__mtrx_eq_dim(void)
 p55
 sa(dp56
 g14
-Vtest_mtrx_suite__mrtx_max
+Vtest_mtrx_suite__mtrx_not_eq_dim
 p57
 sg16
-Vmrtx_max
+Vmtrx_not_eq_dim
 p58
 sg18
-Vvoid test_mtrx_suite__mrtx_max(void)
+Vvoid test_mtrx_suite__mtrx_not_eq_dim(void)
 p59
 sa(dp60
 g14
-Vtest_mtrx_suite__mtrx_min
+Vtest_mtrx_suite__mtrx_eq
 p61
 sg16
-Vmtrx_min
+Vmtrx_eq
 p62
 sg18
-Vvoid test_mtrx_suite__mtrx_min(void)
+Vvoid test_mtrx_suite__mtrx_eq(void)
 p63
 sa(dp64
 g14
-Vtest_mtrx_suite__mtrx_add_ones
+Vtest_mtrx_suite__mrtx_max
 p65
 sg16
-Vmtrx_add_ones
+Vmrtx_max
 p66
 sg18
-Vvoid test_mtrx_suite__mtrx_add_ones(void)
+Vvoid test_mtrx_suite__mrtx_max(void)
 p67
 sa(dp68
 g14
-Vtest_mtrx_suite__mtrx_add_rand
+Vtest_mtrx_suite__mtrx_min
 p69
 sg16
-Vmtrx_add_rand
+Vmtrx_min
 p70
 sg18
-Vvoid test_mtrx_suite__mtrx_add_rand(void)
+Vvoid test_mtrx_suite__mtrx_min(void)
 p71
 sa(dp72
 g14
-Vtest_mtrx_suite__mtrx_add_manual
+Vtest_mtrx_suite__mtrx_add_ones
 p73
 sg16
-Vmtrx_add_manual
+Vmtrx_add_ones
 p74
 sg18
-Vvoid test_mtrx_suite__mtrx_add_manual(void)
+Vvoid test_mtrx_suite__mtrx_add_ones(void)
 p75
 sa(dp76
 g14
-Vtest_mtrx_suite__mtrx_add_null
+Vtest_mtrx_suite__mtrx_add_rand
 p77
 sg16
-Vmtrx_add_null
+Vmtrx_add_rand
 p78
 sg18
-Vvoid test_mtrx_suite__mtrx_add_null(void)
+Vvoid test_mtrx_suite__mtrx_add_rand(void)
 p79
 sa(dp80
 g14
-Vtest_mtrx_suite__mtrx_subtract_ones
+Vtest_mtrx_suite__mtrx_add_manual
 p81
 sg16
-Vmtrx_subtract_ones
+Vmtrx_add_manual
 p82
 sg18
-Vvoid test_mtrx_suite__mtrx_subtract_ones(void)
+Vvoid test_mtrx_suite__mtrx_add_manual(void)
 p83
 sa(dp84
 g14
-Vtest_mtrx_suite__mtrx_subtract_rand
+Vtest_mtrx_suite__mtrx_add_null
 p85
 sg16
-Vmtrx_subtract_rand
+Vmtrx_add_null
 p86
 sg18
-Vvoid test_mtrx_suite__mtrx_subtract_rand(void)
+Vvoid test_mtrx_suite__mtrx_add_null(void)
 p87
 sa(dp88
 g14
-Vtest_mtrx_suite__mtrx_subtract_manual
+Vtest_mtrx_suite__mtrx_subtract_ones
 p89
 sg16
-Vmtrx_subtract_manual
+Vmtrx_subtract_ones
 p90
 sg18
-Vvoid test_mtrx_suite__mtrx_subtract_manual(void)
+Vvoid test_mtrx_suite__mtrx_subtract_ones(void)
 p91
 sa(dp92
 g14
-Vtest_mtrx_suite__mtrx_subtract_null
+Vtest_mtrx_suite__mtrx_subtract_rand
 p93
 sg16
-Vmtrx_subtract_null
+Vmtrx_subtract_rand
 p94
 sg18
-Vvoid test_mtrx_suite__mtrx_subtract_null(void)
+Vvoid test_mtrx_suite__mtrx_subtract_rand(void)
 p95
 sa(dp96
 g14
-Vtest_mtrx_suite__mtrx_scale_ones
+Vtest_mtrx_suite__mtrx_subtract_manual
 p97
 sg16
-Vmtrx_scale_ones
+Vmtrx_subtract_manual
 p98
 sg18
-Vvoid test_mtrx_suite__mtrx_scale_ones(void)
+Vvoid test_mtrx_suite__mtrx_subtract_manual(void)
 p99
 sa(dp100
 g14
-Vtest_mtrx_suite__mtrx_scale_zeros
+Vtest_mtrx_suite__mtrx_subtract_null
 p101
 sg16
-Vmtrx_scale_zeros
+Vmtrx_subtract_null
 p102
 sg18
-Vvoid test_mtrx_suite__mtrx_scale_zeros(void)
+Vvoid test_mtrx_suite__mtrx_subtract_null(void)
 p103
 sa(dp104
 g14
-Vtest_mtrx_suite__mtrx_mult_simple
+Vtest_mtrx_suite__mtrx_scale_ones
 p105
 sg16
-Vmtrx_mult_simple
+Vmtrx_scale_ones
 p106
 sg18
-Vvoid test_mtrx_suite__mtrx_mult_simple(void)
+Vvoid test_mtrx_suite__mtrx_scale_ones(void)
 p107
-sasS'cleanup'
-p108
-NsS'mtime'
+sa(dp108
+g14
+Vtest_mtrx_suite__mtrx_scale_zeros
 p109
-F1425459656.2399554
-sS'initialize'
+sg16
+Vmtrx_scale_zeros
 p110
+sg18
+Vvoid test_mtrx_suite__mtrx_scale_zeros(void)
+p111
+sa(dp112
+g14
+Vtest_mtrx_suite__mtrx_mult_simple
+p113
+sg16
+Vmtrx_mult_simple
+p114
+sg18
+Vvoid test_mtrx_suite__mtrx_mult_simple(void)
+p115
+sa(dp116
+g14
+Vtest_mtrx_suite__mtrx_mult_complex
+p117
+sg16
+Vmtrx_mult_complex
+p118
+sg18
+Vvoid test_mtrx_suite__mtrx_mult_complex(void)
+p119
+sa(dp120
+g14
+Vtest_mtrx_suite__mtrx_pw_mult
+p121
+sg16
+Vmtrx_pw_mult
+p122
+sg18
+Vvoid test_mtrx_suite__mtrx_pw_mult(void)
+p123
+sa(dp124
+g14
+Vtest_mtrx_suite__mtrx_pw_div
+p125
+sg16
+Vmtrx_pw_div
+p126
+sg18
+Vvoid test_mtrx_suite__mtrx_pw_div(void)
+p127
+sa(dp128
+g14
+Vtest_mtrx_suite__mtrx_pow
+p129
+sg16
+Vmtrx_pow
+p130
+sg18
+Vvoid test_mtrx_suite__mtrx_pow(void)
+p131
+sa(dp132
+g14
+Vtest_mtrx_suite__mtrx_row_swap
+p133
+sg16
+Vmtrx_row_swap
+p134
+sg18
+Vvoid test_mtrx_suite__mtrx_row_swap(void)
+p135
+sa(dp136
+g14
+Vtest_mtrx_suite__mtrx_col_swap
+p137
+sg16
+Vmtrx_col_swap
+p138
+sg18
+Vvoid test_mtrx_suite__mtrx_col_swap(void)
+p139
+sa(dp140
+g14
+Vtest_mtrx_suite__mtrx_scale_row
+p141
+sg16
+Vmtrx_scale_row
+p142
+sg18
+Vvoid test_mtrx_suite__mtrx_scale_row(void)
+p143
+sa(dp144
+g14
+Vtest_mtrx_suite__mtrx_scale_col
+p145
+sg16
+Vmtrx_scale_col
+p146
+sg18
+Vvoid test_mtrx_suite__mtrx_scale_col(void)
+p147
+sa(dp148
+g14
+Vtest_mtrx_suite__mtrx_sub_matrix
+p149
+sg16
+Vmtrx_sub_matrix
+p150
+sg18
+Vvoid test_mtrx_suite__mtrx_sub_matrix(void)
+p151
+sa(dp152
+g14
+Vtest_mtrx_suite__mtrx_sub_block
+p153
+sg16
+Vmtrx_sub_block
+p154
+sg18
+Vvoid test_mtrx_suite__mtrx_sub_block(void)
+p155
+sa(dp156
+g14
+Vtest_mtrx_suite__mtrx_transpose
+p157
+sg16
+Vmtrx_transpose
+p158
+sg18
+Vvoid test_mtrx_suite__mtrx_transpose(void)
+p159
+sa(dp160
+g14
+Vtest_mtrx_suite__mtrx_det
+p161
+sg16
+Vmtrx_det
+p162
+sg18
+Vvoid test_mtrx_suite__mtrx_det(void)
+p163
+sa(dp164
+g14
+Vtest_mtrx_suite__mtrx_inv
+p165
+sg16
+Vmtrx_inv
+p166
+sg18
+Vvoid test_mtrx_suite__mtrx_inv(void)
+p167
+sa(dp168
+g14
+Vtest_mtrx_suite__mtrx_solve
+p169
+sg16
+Vmtrx_solve
+p170
+sg18
+Vvoid test_mtrx_suite__mtrx_solve(void)
+p171
+sa(dp172
+g14
+Vtest_mtrx_suite__mtrx_is_diag_dom
+p173
+sg16
+Vmtrx_is_diag_dom
+p174
+sg18
+Vvoid test_mtrx_suite__mtrx_is_diag_dom(void)
+p175
+sa(dp176
+g14
+Vtest_mtrx_suite__mtrx_make_diag_dom
+p177
+sg16
+Vmtrx_make_diag_dom
+p178
+sg18
+Vvoid test_mtrx_suite__mtrx_make_diag_dom(void)
+p179
+sa(dp180
+g14
+Vtest_mtrx_suite__mtrx_solve_gs
+p181
+sg16
+Vmtrx_solve_gs
+p182
+sg18
+Vvoid test_mtrx_suite__mtrx_solve_gs(void)
+p183
+sasS'cleanup'
+p184
+NsS'mtime'
+p185
+F1426049960.5733166
+sS'initialize'
+p186
+NsbsS'vctr_suite'
+p187
+g2
+(g3
+g4
+Ntp188
+Rp189
+(dp190
+g8
+g187
+sg9
+I01
+sg10
+I01
+sg11
+(lp191
+(dp192
+g14
+Vtest_vctr_suite__vctr_init
+p193
+sg16
+Vvctr_init
+p194
+sg18
+Vvoid test_vctr_suite__vctr_init(void)
+p195
+sa(dp196
+g14
+Vtest_vctr_suite__vctr_empty
+p197
+sg16
+Vvctr_empty
+p198
+sg18
+Vvoid test_vctr_suite__vctr_empty(void)
+p199
+sa(dp200
+g14
+Vtest_vctr_suite__vctr_zeros
+p201
+sg16
+Vvctr_zeros
+p202
+sg18
+Vvoid test_vctr_suite__vctr_zeros(void)
+p203
+sa(dp204
+g14
+Vtest_vctr_suite__vctr_ones
+p205
+sg16
+Vvctr_ones
+p206
+sg18
+Vvoid test_vctr_suite__vctr_ones(void)
+p207
+sa(dp208
+g14
+Vtest_vctr_suite__vctr_copy
+p209
+sg16
+Vvctr_copy
+p210
+sg18
+Vvoid test_vctr_suite__vctr_copy(void)
+p211
+sa(dp212
+g14
+Vtest_vctr_suite__vctr_eq_len
+p213
+sg16
+Vvctr_eq_len
+p214
+sg18
+Vvoid test_vctr_suite__vctr_eq_len(void)
+p215
+sa(dp216
+g14
+Vtest_vctr_suite__vctr_eq
+p217
+sg16
+Vvctr_eq
+p218
+sg18
+Vvoid test_vctr_suite__vctr_eq(void)
+p219
+sa(dp220
+g14
+Vtest_vctr_suite__vctr_max
+p221
+sg16
+Vvctr_max
+p222
+sg18
+Vvoid test_vctr_suite__vctr_max(void)
+p223
+sa(dp224
+g14
+Vtest_vctr_suite__vctr_min
+p225
+sg16
+Vvctr_min
+p226
+sg18
+Vvoid test_vctr_suite__vctr_min(void)
+p227
+sa(dp228
+g14
+Vtest_vctr_suite__vctr_dot_prod
+p229
+sg16
+Vvctr_dot_prod
+p230
+sg18
+Vvoid test_vctr_suite__vctr_dot_prod(void)
+p231
+sa(dp232
+g14
+Vtest_vctr_suite__vctr_cross_prod
+p233
+sg16
+Vvctr_cross_prod
+p234
+sg18
+Vvoid test_vctr_suite__vctr_cross_prod(void)
+p235
+sa(dp236
+g14
+Vtest_vctr_suite__vctr_mag
+p237
+sg16
+Vvctr_mag
+p238
+sg18
+Vvoid test_vctr_suite__vctr_mag(void)
+p239
+sasg184
+Nsg185
+F1426050004.4533176
+sg186
 Nsbs.

@@ -21,8 +21,8 @@
  *     length - The length of the vector.                                    *
  *****************************************************************************/
 typedef struct vector {
-	scalar_t *values;
-	size_t length;
+  scalar_t *values;
+  size_t length;
 } vector_t;
 
 

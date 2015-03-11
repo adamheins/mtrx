@@ -1,3 +1,4 @@
+extern void test_mtrx_suite__mtrx_init(void);
 extern void test_mtrx_suite__mtrx_empty(void);
 extern void test_mtrx_suite__mtrx_zeros(void);
 extern void test_mtrx_suite__mtrx_ones(void);
@@ -8,6 +9,7 @@ extern void test_mtrx_suite__mtrx_is_sqr(void);
 extern void test_mtrx_suite__mtrx_is_not_sqr(void);
 extern void test_mtrx_suite__mtrx_eq_dim(void);
 extern void test_mtrx_suite__mtrx_not_eq_dim(void);
+extern void test_mtrx_suite__mtrx_eq(void);
 extern void test_mtrx_suite__mrtx_max(void);
 extern void test_mtrx_suite__mtrx_min(void);
 extern void test_mtrx_suite__mtrx_add_ones(void);
@@ -21,7 +23,37 @@ extern void test_mtrx_suite__mtrx_subtract_null(void);
 extern void test_mtrx_suite__mtrx_scale_ones(void);
 extern void test_mtrx_suite__mtrx_scale_zeros(void);
 extern void test_mtrx_suite__mtrx_mult_simple(void);
+extern void test_mtrx_suite__mtrx_mult_complex(void);
+extern void test_mtrx_suite__mtrx_pw_mult(void);
+extern void test_mtrx_suite__mtrx_pw_div(void);
+extern void test_mtrx_suite__mtrx_pow(void);
+extern void test_mtrx_suite__mtrx_row_swap(void);
+extern void test_mtrx_suite__mtrx_col_swap(void);
+extern void test_mtrx_suite__mtrx_scale_row(void);
+extern void test_mtrx_suite__mtrx_scale_col(void);
+extern void test_mtrx_suite__mtrx_sub_matrix(void);
+extern void test_mtrx_suite__mtrx_sub_block(void);
+extern void test_mtrx_suite__mtrx_transpose(void);
+extern void test_mtrx_suite__mtrx_det(void);
+extern void test_mtrx_suite__mtrx_inv(void);
+extern void test_mtrx_suite__mtrx_solve(void);
+extern void test_mtrx_suite__mtrx_is_diag_dom(void);
+extern void test_mtrx_suite__mtrx_make_diag_dom(void);
+extern void test_mtrx_suite__mtrx_solve_gs(void);
+extern void test_vctr_suite__vctr_init(void);
+extern void test_vctr_suite__vctr_empty(void);
+extern void test_vctr_suite__vctr_zeros(void);
+extern void test_vctr_suite__vctr_ones(void);
+extern void test_vctr_suite__vctr_copy(void);
+extern void test_vctr_suite__vctr_eq_len(void);
+extern void test_vctr_suite__vctr_eq(void);
+extern void test_vctr_suite__vctr_max(void);
+extern void test_vctr_suite__vctr_min(void);
+extern void test_vctr_suite__vctr_dot_prod(void);
+extern void test_vctr_suite__vctr_cross_prod(void);
+extern void test_vctr_suite__vctr_mag(void);
 static const struct clar_func _clar_cb_mtrx_suite[] = {
+    { "mtrx_init", &test_mtrx_suite__mtrx_init },
     { "mtrx_empty", &test_mtrx_suite__mtrx_empty },
     { "mtrx_zeros", &test_mtrx_suite__mtrx_zeros },
     { "mtrx_ones", &test_mtrx_suite__mtrx_ones },
@@ -32,6 +64,7 @@ static const struct clar_func _clar_cb_mtrx_suite[] = {
     { "mtrx_is_not_sqr", &test_mtrx_suite__mtrx_is_not_sqr },
     { "mtrx_eq_dim", &test_mtrx_suite__mtrx_eq_dim },
     { "mtrx_not_eq_dim", &test_mtrx_suite__mtrx_not_eq_dim },
+    { "mtrx_eq", &test_mtrx_suite__mtrx_eq },
     { "mrtx_max", &test_mtrx_suite__mrtx_max },
     { "mtrx_min", &test_mtrx_suite__mtrx_min },
     { "mtrx_add_ones", &test_mtrx_suite__mtrx_add_ones },
@@ -44,15 +77,52 @@ static const struct clar_func _clar_cb_mtrx_suite[] = {
     { "mtrx_subtract_null", &test_mtrx_suite__mtrx_subtract_null },
     { "mtrx_scale_ones", &test_mtrx_suite__mtrx_scale_ones },
     { "mtrx_scale_zeros", &test_mtrx_suite__mtrx_scale_zeros },
-    { "mtrx_mult_simple", &test_mtrx_suite__mtrx_mult_simple }
+    { "mtrx_mult_simple", &test_mtrx_suite__mtrx_mult_simple },
+    { "mtrx_mult_complex", &test_mtrx_suite__mtrx_mult_complex },
+    { "mtrx_pw_mult", &test_mtrx_suite__mtrx_pw_mult },
+    { "mtrx_pw_div", &test_mtrx_suite__mtrx_pw_div },
+    { "mtrx_pow", &test_mtrx_suite__mtrx_pow },
+    { "mtrx_row_swap", &test_mtrx_suite__mtrx_row_swap },
+    { "mtrx_col_swap", &test_mtrx_suite__mtrx_col_swap },
+    { "mtrx_scale_row", &test_mtrx_suite__mtrx_scale_row },
+    { "mtrx_scale_col", &test_mtrx_suite__mtrx_scale_col },
+    { "mtrx_sub_matrix", &test_mtrx_suite__mtrx_sub_matrix },
+    { "mtrx_sub_block", &test_mtrx_suite__mtrx_sub_block },
+    { "mtrx_transpose", &test_mtrx_suite__mtrx_transpose },
+    { "mtrx_det", &test_mtrx_suite__mtrx_det },
+    { "mtrx_inv", &test_mtrx_suite__mtrx_inv },
+    { "mtrx_solve", &test_mtrx_suite__mtrx_solve },
+    { "mtrx_is_diag_dom", &test_mtrx_suite__mtrx_is_diag_dom },
+    { "mtrx_make_diag_dom", &test_mtrx_suite__mtrx_make_diag_dom },
+    { "mtrx_solve_gs", &test_mtrx_suite__mtrx_solve_gs }
+};
+static const struct clar_func _clar_cb_vctr_suite[] = {
+    { "vctr_init", &test_vctr_suite__vctr_init },
+    { "vctr_empty", &test_vctr_suite__vctr_empty },
+    { "vctr_zeros", &test_vctr_suite__vctr_zeros },
+    { "vctr_ones", &test_vctr_suite__vctr_ones },
+    { "vctr_copy", &test_vctr_suite__vctr_copy },
+    { "vctr_eq_len", &test_vctr_suite__vctr_eq_len },
+    { "vctr_eq", &test_vctr_suite__vctr_eq },
+    { "vctr_max", &test_vctr_suite__vctr_max },
+    { "vctr_min", &test_vctr_suite__vctr_min },
+    { "vctr_dot_prod", &test_vctr_suite__vctr_dot_prod },
+    { "vctr_cross_prod", &test_vctr_suite__vctr_cross_prod },
+    { "vctr_mag", &test_vctr_suite__vctr_mag }
 };
 static struct clar_suite _clar_suites[] = {
     {
         "mtrx::suite",
         { NULL, NULL },
         { NULL, NULL },
-        _clar_cb_mtrx_suite, 23, 1
+        _clar_cb_mtrx_suite, 42, 1
+    },
+    {
+        "vctr::suite",
+        { NULL, NULL },
+        { NULL, NULL },
+        _clar_cb_vctr_suite, 12, 1
     }
 };
-static const size_t _clar_suite_count = 1;
-static const size_t _clar_callback_count = 23;
+static const size_t _clar_suite_count = 2;
+static const size_t _clar_callback_count = 54;

@@ -54,35 +54,35 @@ vector_t *vctr_init(const char *str) {
 
 
 vector_t *vctr_empty(size_t length) {
-	vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
+  vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
 
-	vector->values = (scalar_t *)malloc(length * sizeof(scalar_t));
-	vector->length = length;
+  vector->values = (scalar_t *)malloc(length * sizeof(scalar_t));
+  vector->length = length;
 
-	return vector;
+  return vector;
 }
 
 
 vector_t *vctr_zeros(size_t length) {
-	vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
+  vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
 
-	vector->values = (scalar_t *)calloc(length, sizeof(scalar_t));
-	vector->length = length;
+  vector->values = (scalar_t *)calloc(length, sizeof(scalar_t));
+  vector->length = length;
 
-	return vector;
+  return vector;
 }
 
 
 vector_t *vctr_ones(size_t length) {
-	vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
+  vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
 
-	vector->values = (scalar_t *)malloc(length * sizeof(scalar_t));
-	vector->length = length;
+  vector->values = (scalar_t *)malloc(length * sizeof(scalar_t));
+  vector->length = length;
 
-	for (size_t i = 0; i < length; ++i)
-		vector->values[i] = 1;
+  for (size_t i = 0; i < length; ++i)
+    vector->values[i] = 1;
 
-	return vector;
+  return vector;
 }
 
 
@@ -97,34 +97,34 @@ vector_t *vctr_rnd(size_t length, uint32_t max) {
 
 
 vector_t *vctr_copy(vector_t *vector) {
-	vector_t *copy = vctr_empty(vector->length);
-	for (size_t i = 0; i < vector->length; ++i)
-		copy->values[i] = vector->values[i];
-	return copy;
+  vector_t *copy = vctr_empty(vector->length);
+  for (size_t i = 0; i < vector->length; ++i)
+    copy->values[i] = vector->values[i];
+  return copy;
 }
 
 
 /*---------------------------- Deallocation ---------------------------------*/
 
 void vctr_destroy(vector_t *vector) {
-	free(vector->values);
-	free(vector);
-	vector = NULL;
+  free(vector->values);
+  free(vector);
+  vector = NULL;
 }
 
 
 /*-------------------------------- Display ----------------------------------*/
 
 void vctr_print(vector_t *vector) {
-	for (size_t i = 0; i < vector->length; ++i)
-		printf("%f\n", vector->values[i]);
+  for (size_t i = 0; i < vector->length; ++i)
+    printf("%f\n", vector->values[i]);
 }
 
 
 /*------------------------------ Comparisons --------------------------------*/
 
 bool vctr_eq_len(vector_t *A, vector_t *B) {
-	return (A->length == B->length);
+  return (A->length == B->length);
 }
 
 
@@ -165,41 +165,41 @@ scalar_t vctr_min(vector_t *vector) {
 
 scalar_t vctr_dot_prod(vector_t *A, vector_t *B) {
 
-	// Check that the vectors are of equal length.
-	if (!vctr_eq_len(A, B))
-		return 0;
+  // Check that the vectors are of equal length.
+  if (!vctr_eq_len(A, B))
+    return 0;
 
-	scalar_t prod = 0;
-	for (size_t i = 0; i < A->length; ++i)
-		prod += A->values[i] * B->values[i];
+  scalar_t prod = 0;
+  for (size_t i = 0; i < A->length; ++i)
+    prod += A->values[i] * B->values[i];
 
-	return prod;
+  return prod;
 }
 
 
 vector_t *vctr_cross_prod(vector_t *A, vector_t *B) {
 
-	// Vectors must be of length 3 to perform the cross product.
-	if (A->length != 3 || B->length != 3)
-		return NULL;
+  // Vectors must be of length 3 to perform the cross product.
+  if (A->length != 3 || B->length != 3)
+    return NULL;
 
-	vector_t *C = vctr_empty(3);
+  vector_t *C = vctr_empty(3);
 
-	C->values[0] = A->values[1] * B->values[2] - A->values[2] * B->values[1];
-	C->values[1] = A->values[2] * B->values[0] - A->values[0] * B->values[2];
-	C->values[2] = A->values[0] * B->values[1] - A->values[1] * B->values[0];
+  C->values[0] = A->values[1] * B->values[2] - A->values[2] * B->values[1];
+  C->values[1] = A->values[2] * B->values[0] - A->values[0] * B->values[2];
+  C->values[2] = A->values[0] * B->values[1] - A->values[1] * B->values[0];
 
-	return C;
+  return C;
 }
 
 
 scalar_t vctr_mag(vector_t *vector) {
 
-	scalar_t mag = 0;
+  scalar_t mag = 0;
 
-	for (size_t i = 0; i < vector->length; ++i)
-		mag += vector->values[i] * vector->values[i];
+  for (size_t i = 0; i < vector->length; ++i)
+    mag += vector->values[i] * vector->values[i];
 
-	return sqrt(mag);
+  return sqrt(mag);
 }
 
