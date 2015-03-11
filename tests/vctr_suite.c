@@ -9,8 +9,8 @@
 #include <math.h>
 
 #include "clar.h"
-#include "../sclr.h"
-#include "../vctr.h"
+#include "sclr.h"
+#include "vctr.h"
 
 bool vctr_eq_within_tol(vector_t *A, vector_t *B, scalar_t tol) {
   if (!vctr_eq_len(A, B))

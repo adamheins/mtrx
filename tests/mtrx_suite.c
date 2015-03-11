@@ -9,9 +9,9 @@
 #include <math.h>
 
 #include "clar.h"
-#include "../sclr.h"
-#include "../vctr.h"
-#include "../mtrx.h"
+#include "sclr.h"
+#include "vctr.h"
+#include "mtrx.h"
 
 /*------------------------------- Helpers -----------------------------------*/
 
