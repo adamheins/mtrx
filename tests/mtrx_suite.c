@@ -1,8 +1,10 @@
-#include "../mtrx.h"
-#include "clar.h"
 #include <stdio.h>
 #include <math.h>
 
+#include "clar.h"
+#include "../sclr.h"
+#include "../vctr.h"
+#include "../mtrx.h"
 
 /*------------------------------- Helpers -----------------------------------*/
 
