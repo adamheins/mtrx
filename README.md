@@ -9,13 +9,13 @@ To use the library, start by cloning this repository. An example program can be 
 ## Usage
 If you only want the functionality of vectors in your program just write:
 <pre>
-#include <sclr.h>
-#include <vctr.h>
+#include &lt;sclr.h&gt;
+#include &lt;vctr.h&gt;
 </pre>
 
 To gain matrices as well, write the following in addition to the above includes:
 <pre>
-#include <mtrx.h>
+#include &lt;mtrx.h&gt;
 </pre>
 
 ## Testing
