@@ -13,7 +13,7 @@
 #include "vctr.h"
 #include "mtrx.h"
 
-/*------------------------------- Helpers -----------------------------------*/
+/*-------------------------- Helper functions -------------------------------*/
 
 void assert_all_elements_equal(matrix_t *matrix, scalar_t value) {
   for (size_t i = 0; i < matrix->rows; ++i) {
@@ -125,6 +125,58 @@ void test_mtrx_suite__mtrx_copy(void) {
   mtrx_destroy(copy);
 }
 
+/*------------------------ Matrix-Vector Conversion -------------------------*/
+
+void test_mtrx_suite__mtrx_to_vector(void) {
+  matrix_t *matrix = mtrx_ones(1, 5);
+  vector_t *vector = mtrx_to_vector(matrix);
+
+  cl_assert_(vector->length == 5, "Conversion error.");
+  for (size_t i = 0; i < vector->length; ++i)
+    cl_assert_(vector->values[i] == 1, "Conversion error.");
+  mtrx_destroy(matrix);
+  vctr_destroy(vector);
+
+  matrix = mtrx_ones(5, 1);
+  vector = mtrx_to_vector(matrix);
+
+  cl_assert_(vector->length == 5, "Conversion error.");
+  for (size_t i = 0; i < vector->length; ++i)
+    cl_assert_(vector->values[i] == 1, "Conversion error.");
+  mtrx_destroy(matrix);
+  vctr_destroy(vector);
+
+  matrix = mtrx_ones(5, 5);
+  vector = mtrx_to_vector(matrix);
+  cl_assert_(vector == NULL, "Conversion error.");
+  mtrx_destroy(matrix);
+}
+
+
+void test_mtrx_suite__mtrx_from_col_vector(void) {
+  vector_t *vector = vctr_ones(5);
+  matrix_t *matrix = mtrx_from_col_vector(vector);
+
+  cl_assert_(matrix->rows == 5, "Conversion error.");
+  cl_assert_(matrix->columns == 1, "Conversion error.");
+  assert_all_elements_equal(matrix, 1);
+
+  mtrx_destroy(matrix);
+  vctr_destroy(vector);
+}
+
+
+void test_mtrx_suite__mtrx_from_row_vector(void) {
+  vector_t *vector = vctr_ones(5);
+  matrix_t *matrix = mtrx_from_row_vector(vector);
+
+  cl_assert_(matrix->rows == 1, "Conversion error.");
+  cl_assert_(matrix->columns == 5, "Conversion error.");
+  assert_all_elements_equal(matrix, 1);
+
+  mtrx_destroy(matrix);
+  vctr_destroy(vector);
+}
 
 /*------------------------------ Comparisons --------------------------------*/
 

@@ -185,6 +185,44 @@ scalar_t vctr_max(vector_t *vector);
 scalar_t vctr_min(vector_t *vector);
 
 
+/*--------------------------- Vector Arithmetic -----------------------------*/
+
+/*****************************************************************************
+ * Adds to matrices together.                                                *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     A - The first vector.                                                 *
+ *     B - The second vector.                                                *
+ *                                                                           *
+ * Returns: A new vector that is the result of B added to A.                 *
+ *****************************************************************************/
+vector_t *vctr_add(vector_t *A, vector_t *B);
+
+
+/*****************************************************************************
+ * Subtracts one vector from another.                                        *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     A - The first vector.                                                 *
+ *     B - The second vector, which is subtracted from the first.            *
+ *                                                                           *
+ * Returns: A new vector which is equal to B subtracted from A.              *
+ *****************************************************************************/
+vector_t *vctr_subtract(vector_t *A, vector_t *B);
+
+
+/*****************************************************************************
+ * Scales every element in the vector by a scalar value.                     *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     vector - The vector to be scaled.                                     *
+ *     scalar - The value by which to scale.                                 *
+ *                                                                           *
+ * Returns: A new scaled vector.                                             *
+ *****************************************************************************/
+vector_t *vctr_scale(vector_t *vector, scalar_t scalar);
+
+
 /*------------------------------- Operations --------------------------------*/
 
 /*****************************************************************************

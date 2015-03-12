@@ -5,6 +5,9 @@ extern void test_mtrx_suite__mtrx_ones(void);
 extern void test_mtrx_suite__mtrx_id(void);
 extern void test_mtrx_suite__mtrx_diag(void);
 extern void test_mtrx_suite__mtrx_copy(void);
+extern void test_mtrx_suite__mtrx_to_vector(void);
+extern void test_mtrx_suite__mtrx_from_col_vector(void);
+extern void test_mtrx_suite__mtrx_from_row_vector(void);
 extern void test_mtrx_suite__mtrx_is_sqr(void);
 extern void test_mtrx_suite__mtrx_is_not_sqr(void);
 extern void test_mtrx_suite__mtrx_eq_dim(void);
@@ -49,6 +52,9 @@ extern void test_vctr_suite__vctr_eq_len(void);
 extern void test_vctr_suite__vctr_eq(void);
 extern void test_vctr_suite__vctr_max(void);
 extern void test_vctr_suite__vctr_min(void);
+extern void test_vctr_suite__vctr_add(void);
+extern void test_vctr_suite__vctr_subtract(void);
+extern void test_vctr_suite__vctr_scale(void);
 extern void test_vctr_suite__vctr_dot_prod(void);
 extern void test_vctr_suite__vctr_cross_prod(void);
 extern void test_vctr_suite__vctr_mag(void);
@@ -60,6 +66,9 @@ static const struct clar_func _clar_cb_mtrx_suite[] = {
     { "mtrx_id", &test_mtrx_suite__mtrx_id },
     { "mtrx_diag", &test_mtrx_suite__mtrx_diag },
     { "mtrx_copy", &test_mtrx_suite__mtrx_copy },
+    { "mtrx_to_vector", &test_mtrx_suite__mtrx_to_vector },
+    { "mtrx_from_col_vector", &test_mtrx_suite__mtrx_from_col_vector },
+    { "mtrx_from_row_vector", &test_mtrx_suite__mtrx_from_row_vector },
     { "mtrx_is_sqr", &test_mtrx_suite__mtrx_is_sqr },
     { "mtrx_is_not_sqr", &test_mtrx_suite__mtrx_is_not_sqr },
     { "mtrx_eq_dim", &test_mtrx_suite__mtrx_eq_dim },
@@ -106,6 +115,9 @@ static const struct clar_func _clar_cb_vctr_suite[] = {
     { "vctr_eq", &test_vctr_suite__vctr_eq },
     { "vctr_max", &test_vctr_suite__vctr_max },
     { "vctr_min", &test_vctr_suite__vctr_min },
+    { "vctr_add", &test_vctr_suite__vctr_add },
+    { "vctr_subtract", &test_vctr_suite__vctr_subtract },
+    { "vctr_scale", &test_vctr_suite__vctr_scale },
     { "vctr_dot_prod", &test_vctr_suite__vctr_dot_prod },
     { "vctr_cross_prod", &test_vctr_suite__vctr_cross_prod },
     { "vctr_mag", &test_vctr_suite__vctr_mag }
@@ -115,14 +127,14 @@ static struct clar_suite _clar_suites[] = {
         "mtrx::suite",
         { NULL, NULL },
         { NULL, NULL },
-        _clar_cb_mtrx_suite, 42, 1
+        _clar_cb_mtrx_suite, 45, 1
     },
     {
         "vctr::suite",
         { NULL, NULL },
         { NULL, NULL },
-        _clar_cb_vctr_suite, 12, 1
+        _clar_cb_vctr_suite, 15, 1
     }
 };
 static const size_t _clar_suite_count = 2;
-static const size_t _clar_callback_count = 54;
+static const size_t _clar_callback_count = 60;

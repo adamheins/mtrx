@@ -26,6 +26,8 @@
 /*--------------------------- Initialization --------------------------------*/
 
 vector_t *vctr_init(const char *str) {
+  if (str == NULL)
+    return NULL;
 
   // Count the number of elements the array will have.
   size_t count = 0;
@@ -62,8 +64,12 @@ vector_t *vctr_init(const char *str) {
 
 vector_t *vctr_empty(size_t length) {
   vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
+  if (vector == NULL)
+    return NULL;
 
   vector->values = (scalar_t *)malloc(length * sizeof(scalar_t));
+  if (vector->values == NULL)
+    return NULL;
   vector->length = length;
 
   return vector;
@@ -72,8 +78,12 @@ vector_t *vctr_empty(size_t length) {
 
 vector_t *vctr_zeros(size_t length) {
   vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
+  if (vector == NULL)
+    return NULL;
 
   vector->values = (scalar_t *)calloc(length, sizeof(scalar_t));
+  if (vector->values == NULL)
+    return NULL;
   vector->length = length;
 
   return vector;
@@ -81,10 +91,9 @@ vector_t *vctr_zeros(size_t length) {
 
 
 vector_t *vctr_ones(size_t length) {
-  vector_t *vector = (vector_t *)malloc(sizeof(vector_t));
-
-  vector->values = (scalar_t *)malloc(length * sizeof(scalar_t));
-  vector->length = length;
+  vector_t *vector = vctr_empty(length);
+  if (vector == NULL)
+    return NULL;
 
   for (size_t i = 0; i < length; ++i)
     vector->values[i] = 1;
@@ -95,6 +104,8 @@ vector_t *vctr_ones(size_t length) {
 
 vector_t *vctr_rnd(size_t length, uint32_t max) {
   vector_t *vector = vctr_empty(length);
+  if (vector == NULL)
+    return NULL;
 
   for (size_t i = 0; i < length; ++i)
     vector->values[i] = rand() % max;
@@ -105,6 +116,8 @@ vector_t *vctr_rnd(size_t length, uint32_t max) {
 
 vector_t *vctr_copy(vector_t *vector) {
   vector_t *copy = vctr_empty(vector->length);
+  if (copy == NULL)
+    return NULL;
   for (size_t i = 0; i < vector->length; ++i)
     copy->values[i] = vector->values[i];
   return copy;
@@ -168,6 +181,47 @@ scalar_t vctr_min(vector_t *vector) {
 }
 
 
+/*--------------------------- Vector Arithmetic -----------------------------*/
+
+vector_t *vctr_add(vector_t *A, vector_t *B) {
+  if (!vctr_eq_len(A, B))
+    return NULL;
+
+  vector_t *C = vctr_empty(A->length);
+  if (C == NULL)
+    return NULL;
+
+  for (size_t i = 0; i < A->length; ++i)
+    C->values[i] = A->values[i] + B->values[i];
+  return C;
+}
+
+
+vector_t *vctr_subtract(vector_t *A, vector_t *B) {
+  if (!vctr_eq_len(A, B))
+    return NULL;
+
+  vector_t *C = vctr_empty(A->length);
+  if (C == NULL)
+    return NULL;
+
+  for (size_t i = 0; i < A->length; ++i)
+    C->values[i] = A->values[i] - B->values[i];
+  return C;
+}
+
+
+vector_t *vctr_scale(vector_t *vector, scalar_t scalar) {
+  vector_t *scaled = vctr_empty(vector->length);
+  if (scaled == NULL)
+    return NULL;
+
+  for (size_t i = 0; i < vector->length; ++i)
+    scaled->values[i] = vector->values[i] * scalar;
+  return scaled;
+}
+
+
 /*------------------------------- Operations --------------------------------*/
 
 scalar_t vctr_dot_prod(vector_t *A, vector_t *B) {
@@ -191,6 +245,8 @@ vector_t *vctr_cross_prod(vector_t *A, vector_t *B) {
     return NULL;
 
   vector_t *C = vctr_empty(3);
+  if (C == NULL)
+    return NULL;
 
   C->values[0] = A->values[1] * B->values[2] - A->values[2] * B->values[1];
   C->values[1] = A->values[2] * B->values[0] - A->values[0] * B->values[2];

@@ -53,6 +53,8 @@ matrix_t *mtrx_padded_split(matrix_t *matrix, size_t r1, size_t r2, size_t c1,
   size_t num_rows = r2 - r1;
   size_t num_cols = c2 - c1;
   matrix_t *child_matrix = mtrx_zeros(rows, cols);
+  if (child_matrix == NULL)
+    return NULL;
 
   for (size_t i = 0; i < num_rows; ++i) {
     for (size_t j = 0; j < num_cols; ++j)
@@ -92,6 +94,8 @@ lu_factors_t *lu_decomposition(matrix_t *matrix) {
   matrix_t *L = mtrx_copy(matrix);
   matrix_t *U = mtrx_id(n);
   matrix_t *P = mtrx_id(n);
+  if (L == NULL || U == NULL || P == NULL)
+    return NULL;
 
   swaps += lu_decomposition_pivot(L, P, 0);
 
@@ -129,6 +133,8 @@ lu_factors_t *lu_decomposition(matrix_t *matrix) {
   }
 
   lu_factors_t *lu_factors = (lu_factors_t *)malloc(sizeof(lu_factors_t));
+  if (lu_factors == NULL)
+    return NULL;
   lu_factors->L = L;
   lu_factors->U = U;
   lu_factors->P = P;
@@ -141,6 +147,8 @@ lu_factors_t *lu_decomposition(matrix_t *matrix) {
 // Perform the naive matrix multiplication algorithm.
 matrix_t *mtrx_naive_mult(matrix_t *A, matrix_t *B) {
   matrix_t *C = mtrx_zeros(A->rows, B->columns);
+  if (C == NULL)
+    return NULL;
 
   for (size_t i = 0; i < B->columns; ++i) {
     for (size_t j = 0; j < A->rows; ++j) {
@@ -171,12 +179,16 @@ matrix_t *mtrx_strassen_mult(matrix_t *A, matrix_t *B) {
   matrix_t *A12 = mtrx_padded_split(A, 0, Ahr, Ahc, A->columns, Ahr, Ahc);
   matrix_t *A21 = mtrx_padded_split(A, Ahr, A->rows, 0, Ahc, Ahr, Ahc);
   matrix_t *A22 = mtrx_padded_split(A, Ahr, A->rows, Ahc, A->columns, Ahr, Ahc);
+  if (A11 == NULL || A12 == NULL || A21 == NULL || A22 == NULL)
+    return NULL;
 
   // Split B into four submatrices.
   matrix_t *B11 = mtrx_sub_block(B, 0, Bhr, 0, Bhc);
   matrix_t *B12 = mtrx_padded_split(B, 0, Bhr, Bhc, B->columns, Bhr, Bhc);
   matrix_t *B21 = mtrx_padded_split(B, Bhr, B->rows, 0, Bhc, Bhr, Bhc);
   matrix_t *B22 = mtrx_padded_split(B, Bhr, B->rows, Bhc, B->columns, Bhr, Bhc);
+  if (B11 == NULL || B12 == NULL || B21 == NULL || B22 == NULL)
+    return NULL;
 
   // Calculate M matrices. This is the recursive section of the algorithm.
   matrix_t *M[7];
@@ -187,6 +199,11 @@ matrix_t *mtrx_strassen_mult(matrix_t *A, matrix_t *B) {
   M[4] = mtrx_strassen_mult(mtrx_add(A11, A12), B22);
   M[5] = mtrx_strassen_mult(mtrx_subtract(A21, A11), mtrx_add(B11, B12));
   M[6] = mtrx_strassen_mult(mtrx_subtract(A12, A22), mtrx_add(B21, B22));
+
+  for (uint8_t i = 0; i < 7; ++i) {
+    if (M[i] == NULL)
+      return NULL;
+  }
 
   mtrx_destroy(A11);
   mtrx_destroy(A12);
@@ -203,11 +220,15 @@ matrix_t *mtrx_strassen_mult(matrix_t *A, matrix_t *B) {
   matrix_t *C12 = mtrx_add(M[2], M[4]);
   matrix_t *C21 = mtrx_add(M[1], M[3]);
   matrix_t *C22 = mtrx_add(mtrx_add(mtrx_subtract(M[0], M[1]), M[2]), M[5]);
+  if (C11 == NULL || C12 == NULL || C21 == NULL || C22 == NULL)
+    return NULL;
 
   for (uint8_t i = 0; i < 7; ++i)
     mtrx_destroy(M[i]);
 
   matrix_t *C = mtrx_empty(A->rows, B->columns);
+  if (C == NULL)
+    return NULL;
 
   for (size_t i = 0; i < C11->rows; ++i) {
     for (size_t j = 0; j < C11->columns; ++j)
@@ -243,6 +264,8 @@ vector_t *back_sub(matrix_t *A, vector_t *B) {
   size_t n = A->rows;
 
   vector_t *X = vctr_empty(n);
+  if (X == NULL)
+    return NULL;
 
   // For loop syntax adjusted to properly decrement an unsigned value.
   for (size_t i = n; i-- > 0;) {
@@ -260,6 +283,8 @@ vector_t *forward_sub(matrix_t *A, vector_t *B) {
   size_t n = A->rows;
 
   vector_t *X = vctr_empty(n);
+  if (X == NULL)
+    return NULL;
 
   for (size_t i = 0; i < n; ++i) {
     X->values[i] = B->values[i];
@@ -271,8 +296,8 @@ vector_t *forward_sub(matrix_t *A, vector_t *B) {
 }
 
 
-// Determine the number of columns in the matrix.
-size_t get_num_columns(const char *str) {
+// Determine the number of columns in the matrix from a string representation.
+size_t get_num_columns_from_string(const char *str) {
 
   size_t count = 0;
   if (str[0] != ' ')
@@ -290,6 +315,8 @@ size_t get_num_columns(const char *str) {
 // Parse a row from the matrix.
 scalar_t *row_from_str(const char *str, size_t cols, size_t low, size_t high) {
   scalar_t *values = (scalar_t *)malloc(cols * sizeof(scalar_t));
+  if (values == NULL)
+    return NULL;
 
   // Parse each scalar value out of the array.
   size_t count = 0;
@@ -319,8 +346,12 @@ scalar_t *row_from_str(const char *str, size_t cols, size_t low, size_t high) {
 
 indexer_t *indexer_init(size_t length) {
   indexer_t *indexer = (indexer_t *)malloc(sizeof(indexer_t));
+  if (indexer == NULL)
+    return NULL;
 
   indexer->values = (size_t *)malloc(length * sizeof(size_t));
+  if (indexer->values == NULL)
+    return NULL;
   indexer->length = length;
 
   return indexer;
@@ -334,6 +365,8 @@ indexer_t *indexer_init(size_t length) {
 /*--------------------------- Initialization --------------------------------*/
 
 matrix_t *mtrx_init(const char *str) {
+  if (str == NULL)
+    return NULL;
 
   // Figure out how many rows the matrix will have.
   size_t row_count = 1;
@@ -344,16 +377,23 @@ matrix_t *mtrx_init(const char *str) {
 
   // Create the matrix.
   matrix_t *matrix = (matrix_t *)malloc(sizeof(matrix_t));
+  if (matrix == NULL)
+    return NULL;
   matrix->rows = row_count;
-  matrix->columns = get_num_columns(str);
+  matrix->columns = get_num_columns_from_string(str);
   matrix->values = (scalar_t **)malloc(row_count * sizeof(scalar_t *));
+  if (matrix->values == NULL)
+    return NULL;
 
   size_t start = 0;
   size_t index = 0;
   size_t count = 0;
   for (; str[index] != '\0'; ++index) {
     if (str[index] == ';') {
-      matrix->values[count++] = row_from_str(str, matrix->columns, start, index);
+      matrix->values[count] = row_from_str(str, matrix->columns, start, index);
+      if (matrix->values[count] == NULL)
+        return NULL;
+      ++count;
       start = index + 1;
     }
   }
@@ -365,13 +405,20 @@ matrix_t *mtrx_init(const char *str) {
 
 matrix_t *mtrx_empty(size_t rows, size_t cols) {
   matrix_t *matrix = (matrix_t *)malloc(sizeof(matrix_t));
+  if (matrix == NULL)
+    return NULL;
 
   // Allocate the array of rows.
   matrix->values = (scalar_t **)malloc(rows * sizeof(scalar_t *));
+  if (matrix->values == NULL)
+    return NULL;
 
   // Allocate the columns arrays.
-  for (size_t i = 0; i < rows; ++i)
+  for (size_t i = 0; i < rows; ++i) {
     matrix->values[i] = (scalar_t *)malloc(cols * sizeof(scalar_t));
+    if (matrix->values[i] == NULL)
+      return NULL;
+  }
 
   matrix->rows = rows;
   matrix->columns = cols;
@@ -382,13 +429,20 @@ matrix_t *mtrx_empty(size_t rows, size_t cols) {
 
 matrix_t *mtrx_zeros(size_t rows, size_t cols) {
   matrix_t *matrix = (matrix_t *)malloc(sizeof(matrix_t));
+  if (matrix == NULL)
+    return NULL;
 
   // Allocate the array of rows.
   matrix->values = (scalar_t **)calloc(rows, sizeof(scalar_t *));
+  if (matrix->values == NULL)
+    return NULL;
 
   // Allocate the columns arrays.
-  for (size_t i = 0; i < rows; ++i)
+  for (size_t i = 0; i < rows; ++i) {
     matrix->values[i] = (scalar_t *)calloc(cols, sizeof(scalar_t));
+    if (matrix->values[i] == NULL)
+      return NULL;
+  }
 
   matrix->rows = rows;
   matrix->columns = cols;
@@ -398,14 +452,9 @@ matrix_t *mtrx_zeros(size_t rows, size_t cols) {
 
 
 matrix_t *mtrx_ones(size_t rows, size_t cols) {
-  matrix_t *matrix = (matrix_t *)malloc(sizeof(matrix_t));
-
-  // Allocate the array of rows.
-  matrix->values = (scalar_t **)malloc(rows * sizeof(scalar_t *));
-
-  // Allocate the columns arrays.
-  for (size_t i = 0; i < rows; ++i)
-    matrix->values[i] = (scalar_t *)malloc(cols * sizeof(scalar_t));
+  matrix_t *matrix = mtrx_empty(rows, cols);
+  if (matrix == NULL)
+    return NULL;
 
   matrix->rows = rows;
   matrix->columns = cols;
@@ -421,6 +470,8 @@ matrix_t *mtrx_ones(size_t rows, size_t cols) {
 
 matrix_t *mtrx_id(size_t n) {
   matrix_t *id = mtrx_zeros(n, n);
+  if (id == NULL)
+    return NULL;
 
   // Fill diagonal with zeros.
   for (size_t i = 0; i < n; ++i)
@@ -432,6 +483,8 @@ matrix_t *mtrx_id(size_t n) {
 
 matrix_t *mtrx_diag(vector_t *vector) {
   matrix_t *matrix = mtrx_zeros(vector->length, vector->length);
+  if (matrix == NULL)
+    return NULL;
 
   for (size_t i = 0; i < vector->length; ++i)
     matrix->values[i][i] = vector->values[i];
@@ -442,6 +495,8 @@ matrix_t *mtrx_diag(vector_t *vector) {
 
 matrix_t *mtrx_rnd(size_t rows, size_t cols, uint32_t max) {
   matrix_t *matrix = mtrx_empty(rows, cols);
+  if (matrix == NULL)
+    return NULL;
 
   for (size_t i = 0; i < rows; ++i) {
     for (size_t j = 0; j < cols; ++j)
@@ -454,6 +509,8 @@ matrix_t *mtrx_rnd(size_t rows, size_t cols, uint32_t max) {
 
 matrix_t *mtrx_copy(matrix_t *matrix) {
   matrix_t *copy = mtrx_empty(matrix->rows, matrix->columns);
+  if (copy == NULL)
+    return NULL;
 
   for (size_t i = 0; i < matrix->rows; ++i) {
     for (size_t j = 0; j < matrix->columns; ++j)
@@ -483,6 +540,48 @@ void mtrx_print(matrix_t *matrix) {
       printf("%f ", matrix->values[i][j]);
     printf("\n");
   }
+}
+
+
+/*------------------------ Matrix-Vector Conversion -------------------------*/
+
+vector_t *mtrx_to_vector(matrix_t *matrix) {
+  if (matrix->rows == 1) {
+    vector_t *vector = vctr_empty(matrix->columns);
+    if (vector == NULL)
+      return NULL;
+    for (size_t i = 0; i < vector->length; ++i)
+      vector->values[i] = matrix->values[0][i];
+    return vector;
+  } else if (matrix->columns == 1) {
+    vector_t *vector = vctr_empty(matrix->rows);
+    if (vector == NULL)
+      return NULL;
+    for (size_t i = 0; i < vector->length; ++i)
+      vector->values[i] = matrix->values[i][0];
+    return vector;
+  }
+  return NULL;
+}
+
+
+matrix_t *mtrx_from_col_vector(vector_t *vector) {
+  matrix_t *matrix = mtrx_empty(vector->length, 1);
+  if (matrix == NULL)
+    return NULL;
+  for (size_t i = 0; i < vector->length; ++i)
+    matrix->values[i][0] = vector->values[i];
+  return matrix;
+}
+
+
+matrix_t *mtrx_from_row_vector(vector_t *vector) {
+  matrix_t *matrix = mtrx_empty(1, vector->length);
+  if (matrix == NULL)
+    return NULL;
+  for (size_t i = 0; i < vector->length; ++i)
+    matrix->values[0][i] = vector->values[i];
+  return matrix;
 }
 
 
@@ -549,6 +648,8 @@ matrix_t *mtrx_add(matrix_t *A, matrix_t *B) {
 
   // Create a new matrix to hold the result.
   matrix_t *C = mtrx_empty(A->rows, A->columns);
+  if (C == NULL)
+    return NULL;
 
   for (size_t i = 0; i < A->rows; ++i) {
     for (size_t j = 0; j < A->columns; j++)
@@ -567,6 +668,8 @@ matrix_t *mtrx_subtract(matrix_t *A, matrix_t *B) {
 
   // Create a new matrix to hold the result.
   matrix_t *C = mtrx_empty(A->rows, A->columns);
+  if (C == NULL)
+    return NULL;
 
   // Subtract each element in B from the corresponding element in A to
   // generate the resulting element in C.
@@ -581,6 +684,8 @@ matrix_t *mtrx_subtract(matrix_t *A, matrix_t *B) {
 
 matrix_t *mtrx_scale(matrix_t *matrix, scalar_t scalar) {
   matrix_t *multiple = mtrx_empty(matrix->rows, matrix->columns);
+  if (multiple == NULL)
+    return NULL;
 
   for (size_t i = 0; i < matrix->rows; ++i) {
     for (size_t j = 0; j < matrix->columns; ++j)
@@ -606,6 +711,8 @@ vector_t *mtrx_mult_vctr(matrix_t *A, vector_t *B) {
     return NULL;
 
   vector_t *C = vctr_zeros(A->rows);
+  if (C == NULL)
+    return NULL;
 
   for (size_t i = 0; i < A->rows; ++i) {
     for (size_t j = 0; j < A->columns; ++j)
@@ -623,6 +730,8 @@ matrix_t *mtrx_pw_mult(matrix_t *A, matrix_t *B) {
     return NULL;
 
   matrix_t *C = mtrx_empty(A->rows, A->columns);
+  if (C == NULL)
+    return NULL;
 
   for (size_t r = 0; r < A->rows; ++r) {
     for (size_t c = 0; c < A->columns; ++c)
@@ -638,6 +747,8 @@ matrix_t *mtrx_pw_div(matrix_t *A, matrix_t *B) {
     return NULL;
 
   matrix_t *C = mtrx_empty(A->rows, A->columns);
+  if (C == NULL)
+    return NULL;
 
   for (size_t r = 0; r < A->rows; ++r) {
     for (size_t c = 0; c < A->columns; ++c)
@@ -653,6 +764,8 @@ matrix_t *mtrx_pw_pow(matrix_t *A, matrix_t *B) {
     return NULL;
 
   matrix_t *C = mtrx_empty(A->rows, A->columns);
+  if (C == NULL)
+    return NULL;
 
   for (size_t r = 0; r < A->rows; ++r) {
     for (size_t c = 0; c < A->columns; ++c)
@@ -704,6 +817,8 @@ void mtrx_scale_col(matrix_t *matrix, size_t col, scalar_t scalar) {
 
 vector_t *mtrx_get_row(matrix_t *matrix, size_t row) {
   vector_t *vector = vctr_empty(matrix->columns);
+  if (vector == NULL)
+    return NULL;
 
   for (size_t i = 0; i < vector->length; ++i)
     vector->values[i] = matrix->values[row][i];
@@ -714,6 +829,8 @@ vector_t *mtrx_get_row(matrix_t *matrix, size_t row) {
 
 vector_t *mtrx_get_col(matrix_t *matrix, size_t col) {
   vector_t *vector = vctr_empty(matrix->rows);
+  if (vector == NULL)
+    return NULL;
 
   for (size_t i = 0; i < vector->length; ++i)
     vector->values[i] = matrix->values[i][col];
@@ -746,6 +863,8 @@ void mtrx_set_col(matrix_t *matrix, vector_t *vector, size_t col) {
 
 matrix_t *mtrx_sub_matrix(matrix_t *A, indexer_t *rows, indexer_t *columns) {
   matrix_t *sub = mtrx_zeros(rows->length, columns->length);
+  if (sub == NULL)
+    return NULL;
 
   for (size_t i = 0; i < rows->length; ++i) {
     for (size_t j = 0; j < columns->length; ++j)
@@ -761,6 +880,8 @@ matrix_t *mtrx_sub_block(matrix_t *matrix, size_t r1, size_t r2, size_t c1,
   size_t num_rows = r2 - r1;
   size_t num_cols = c2 - c1;
   matrix_t *child_matrix = mtrx_zeros(num_rows, num_cols);
+  if (child_matrix == NULL)
+    return NULL;
 
   for (size_t i = 0; i < num_rows; ++i) {
     for (size_t j = 0; j < num_cols; ++j)
@@ -774,6 +895,8 @@ matrix_t *mtrx_sub_block(matrix_t *matrix, size_t r1, size_t r2, size_t c1,
 
 matrix_t *mtrx_transpose(matrix_t *matrix) {
   matrix_t *transpose = mtrx_zeros(matrix->columns, matrix->rows);
+  if (transpose == NULL)
+    return NULL;
 
   for (size_t i = 0; i < matrix->rows; ++i) {
     for (size_t j = 0; j < matrix->columns; ++j)
@@ -809,16 +932,28 @@ matrix_t *mtrx_inv(matrix_t *matrix) {
     return NULL;
 
   matrix_t *inverse = mtrx_zeros(matrix->rows, matrix->columns);
+  if (inverse == NULL)
+    return NULL;
   vector_t *id_col = vctr_zeros(matrix->rows);
+  if (id_col == NULL)
+    return NULL;
   id_col->values[0] = 1;
 
   // Use LU decomposition to decompose A into an upper and lower triangular matrix.
   lu_factors_t *lu_factors = lu_decomposition(matrix);
+  if (lu_factors == NULL)
+    return NULL;
 
   // Solve the system.
   vector_t *C = mtrx_mult_vctr(lu_factors->P, id_col);
+  if (C == NULL)
+    return NULL;
   vector_t *D = forward_sub(lu_factors->L, C);
+  if (D == NULL)
+    return NULL;
   vector_t *X = back_sub(lu_factors->U, D);
+  if (X == NULL)
+    return NULL;
   mtrx_set_col(inverse, X, 0);
 
   for (size_t i = 1; i < id_col->length; ++i) {
@@ -848,11 +983,19 @@ vector_t *mtrx_solve(matrix_t *A, vector_t *B) {
   // Use LU decomposition to decompose A into an upper and lower triangular
   // matrix.
   lu_factors_t *lu_factors = lu_decomposition(A);
+  if (lu_factors == NULL)
+    return NULL;
 
   // Solve the system.
   vector_t *C = mtrx_mult_vctr(lu_factors->P, B);
+  if (C == NULL)
+    return NULL;
   vector_t *D = forward_sub(lu_factors->L, C);
+  if (D == NULL)
+    return NULL;
   vector_t *X = back_sub(lu_factors->U, D);
+  if (X == NULL)
+    return NULL;
 
   // Release memory from temporary objects.
   vctr_destroy(C);
@@ -893,6 +1036,8 @@ matrix_t *mtrx_make_diag_dom(matrix_t *matrix) {
     return false;
 
   int32_t *mark = (int32_t *)malloc(matrix->rows * sizeof(int32_t));
+  if (mark == NULL)
+    return NULL;
   for (size_t i = 0; i < matrix->rows; ++i)
     mark[i] = -1;
 
@@ -929,6 +1074,8 @@ matrix_t *mtrx_make_diag_dom(matrix_t *matrix) {
 
   // Create a the rearranged diagonally dominant matrix.
   matrix_t *diag_dom_matrix = mtrx_empty(matrix->rows, matrix->columns);
+  if (diag_dom_matrix == NULL)
+    return NULL;
   for (size_t i = 0; i < matrix->rows; ++i) {
     for (size_t j = 0; j < matrix->columns; ++j)
       diag_dom_matrix->values[i][j] = matrix->values[mark[i]][j];

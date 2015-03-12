@@ -132,6 +132,52 @@ void test_vctr_suite__vctr_min(void) {
 }
 
 
+/*--------------------------- Vector Arithmetic -----------------------------*/
+
+void test_vctr_suite__vctr_add(void) {
+  vector_t *A = vctr_init("1 2 3 4 5");
+  vector_t *B = vctr_init("1 -2 4 -7 -9");
+  vector_t *expected = vctr_init("2 0 7 -3 -4");
+
+  vector_t *result = vctr_add(A, B);
+  cl_assert_(vctr_eq(result, expected), "Addition error.");
+
+  vctr_destroy(A);
+  vctr_destroy(B);
+  vctr_destroy(expected);
+  vctr_destroy(result);
+}
+
+
+void test_vctr_suite__vctr_subtract(void) {
+  vector_t *A = vctr_init("1 2 3 4 5");
+  vector_t *B = vctr_init("1 -2 4 -7 -9");
+  vector_t *expected = vctr_init("0 4 -1 11 14");
+
+  vector_t *result = vctr_subtract(A, B);
+  cl_assert_(vctr_eq(result, expected), "Subtraction error.");
+
+  vctr_destroy(A);
+  vctr_destroy(B);
+  vctr_destroy(expected);
+  vctr_destroy(result);
+}
+
+
+void test_vctr_suite__vctr_scale(void) {
+  vector_t *A = vctr_init("1 2 3 4 5");
+  scalar_t B = 3;
+  vector_t *expected = vctr_init("3 6 9 12 15");
+
+  vector_t *result = vctr_scale(A, B);
+  cl_assert_(vctr_eq(result, expected), "Scaling error.");
+
+  vctr_destroy(A);
+  vctr_destroy(expected);
+  vctr_destroy(result);
+}
+
+
 /*------------------------------- Operations --------------------------------*/
 
 void test_vctr_suite__vctr_dot_prod(void) {

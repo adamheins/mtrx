@@ -198,6 +198,43 @@ void mtrx_destroy(matrix_t *matrix);
 void mtrx_print(matrix_t *matrix);
 
 
+/*------------------------ Matrix-Vector Conversion -------------------------*/
+
+/*****************************************************************************
+ * Converts the matrix to a vector.                                          *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     matrix - The matrix to convert. At least one of the matrix's          *
+ *              dimensions must be 1.                                        *
+ *                                                                           *
+ * Returns: A vector with the same dimensions and values as the original     *
+ *          vector.                                                          *
+ *****************************************************************************/
+vector_t *mtrx_to_vector(matrix_t *matrix);
+
+
+/*****************************************************************************
+ * Converts the vector to a matrix with a single column.                     *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     vector - The vector to convert.                                       *
+ *                                                                           *
+ * Returns: A matrix containing the values of the original vector.           *
+ *****************************************************************************/
+matrix_t *mtrx_from_col_vector(vector_t *vector);
+
+
+/*****************************************************************************
+ * Converts the vector to a matrix with a single row.                        *
+ *                                                                           *
+ * Fields:                                                                   *
+ *     vector - The vector to convert.                                       *
+ *                                                                           *
+ * Returns: A matrix containing the values of the original vector.           *
+ *****************************************************************************/
+matrix_t *mtrx_from_row_vector(vector_t *vector);
+
+
 /*------------------------------ Comparisons --------------------------------*/
 
 /*****************************************************************************
@@ -205,7 +242,8 @@ void mtrx_print(matrix_t *matrix);
  * the same as the number columns in the matrix.                             *
  *                                                                           *
  * Fields:                                                                   *
- *     matrix - The matrix to check for squareness.                          * *                                                                           *
+ *     matrix - The matrix to check for squareness.                          *
+ *                                                                           *
  * Returns: True if the matrix is square, false otherwise.                   *
  *****************************************************************************/
 bool mtrx_is_sqr(matrix_t *matrix);
