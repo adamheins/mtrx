@@ -26,7 +26,7 @@ TEST_FLAGS := -D_GNU_SOURCE
 
 .PHONY: all clean distclean test
 
-all: $(TARGET)
+all: clean $(TARGET)
 
 $(TARGET): $(SRC_FILES)
 	$(CC) $(CFLAGS) -o $(TARGET) $(SRC_FILES) $(EXAMPLE_FILES) $(LDLIBS)
