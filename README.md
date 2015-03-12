@@ -7,13 +7,13 @@ For a full list and description of all supported operations, view the [mtrx.h](h
 To use the library, start by cloning this repository. An example program can be found in the example/ folder. Run `make` to generate a binary called 'mtrx' that includes any c files in the example/ and src/ directories. Execute it by running `./mtrx`.
 
 ## Usage
-If you only want the functionality of vectors in your program just write:
+If you only want the functionality of vectors (and scalars) in your program just write:
 <pre>
 #include &lt;sclr.h&gt;
 #include &lt;vctr.h&gt;
 </pre>
 
-To gain matrices as well, write the following in addition to the above includes:
+To gain matrices as well, write the following in addition to the above `#include` statements:
 <pre>
 #include &lt;mtrx.h&gt;
 </pre>
